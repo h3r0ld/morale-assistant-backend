@@ -14,4 +14,4 @@ jobs:
       with:
         java-version: 11.0.5
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -B package --file morale-assistant-backend/pom.xml
