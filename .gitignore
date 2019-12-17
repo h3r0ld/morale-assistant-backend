@@ -13,7 +13,6 @@ buildNumber.properties
 .DS_Store
 
 HELP.md
-target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
@@ -44,3 +43,4 @@ build/
 ### VS Code ###
 .vscode/
 
+google_credentials.json
