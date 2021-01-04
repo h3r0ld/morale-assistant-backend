@@ -43,4 +43,7 @@ build/
 ### VS Code ###
 .vscode/
 
+### Gradle ###
+.gradle
+
 google_credentials.json

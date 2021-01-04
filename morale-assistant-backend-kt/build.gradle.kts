@@ -31,6 +31,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-configuration-processor")
 
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
     implementation("com.google.cloud:google-cloud-texttospeech:0.117.0-beta")
     implementation("de.dfki.mary:voice-cmu-slt-hsmm:5.2")
 

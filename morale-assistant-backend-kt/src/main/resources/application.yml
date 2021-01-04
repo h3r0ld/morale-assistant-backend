@@ -5,6 +5,7 @@ spring:
     password:
   jpa:
     hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
       ddl-auto: create-drop
 
 sounds:
