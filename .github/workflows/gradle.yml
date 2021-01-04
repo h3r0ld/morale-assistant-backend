@@ -1,4 +1,4 @@
-name: Java CI
+name: Gradle CI
 
 on: [push]
 
@@ -13,5 +13,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11.0.5
-    - name: Build with Maven
-      run: mvn -B package --file morale-assistant-backend/pom.xml
+    - name: Build with Gradle
+      uses: eskatos/gradle-command-action@v1.3.3
+      with:
+        arguments: clean install
