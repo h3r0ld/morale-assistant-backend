@@ -1,6 +1,7 @@
-package hu.herolds.projects.moraleassistant.service.synthesizer;
+package hu.herolds.projects.moraleassistant.util.synthesizer;
 
 import hu.herolds.projects.moraleassistant.exception.SynthesizeException;
+import hu.herolds.projects.moraleassistant.model.enums.Language;
 import hu.herolds.projects.moraleassistant.util.SoundFilesUtils;
 import lombok.extern.slf4j.Slf4j;
 import marytts.LocalMaryInterface;
@@ -11,14 +12,17 @@ import org.springframework.stereotype.Component;
 import javax.sound.sampled.AudioInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component("MaryTTSSynthesizerUtil")
-public class MaryTTSSynthesizerService implements SynthesizerService {
+public class MaryTTSSynthesizer implements Synthesizer {
     private final LocalMaryInterface localMaryInterface;
     private final SoundFilesUtils soundFilesUtils;
 
-    public MaryTTSSynthesizerService(
+    public MaryTTSSynthesizer(
             final LocalMaryInterface localMaryInterface,
             final SoundFilesUtils soundFilesUtils) {
         this.localMaryInterface = localMaryInterface;
@@ -50,6 +54,11 @@ public class MaryTTSSynthesizerService implements SynthesizerService {
             throw new SynthesizeException(e);
         }
 
+    }
+
+    @Override
+    public Set<Language> getSupportedLanguages() {
+        return Stream.of(Language.EN).collect(Collectors.toSet());
     }
 
 }

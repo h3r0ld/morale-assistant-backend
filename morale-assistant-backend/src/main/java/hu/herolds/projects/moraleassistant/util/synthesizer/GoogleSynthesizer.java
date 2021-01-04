@@ -1,8 +1,9 @@
-package hu.herolds.projects.moraleassistant.service.synthesizer;
+package hu.herolds.projects.moraleassistant.util.synthesizer;
 
 import com.google.cloud.texttospeech.v1.*;
 import com.google.protobuf.ByteString;
 import hu.herolds.projects.moraleassistant.exception.SynthesizeException;
+import hu.herolds.projects.moraleassistant.model.enums.Language;
 import hu.herolds.projects.moraleassistant.util.SoundFilesUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,17 +12,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 // https://cloud.google.com/text-to-speech/docs/quickstart-client-libraries#client-libraries-install-java
 @Slf4j
 @Component("GoogleSynthesizerUtils")
-public class GoogleSynthesizerService implements SynthesizerService {
+public class GoogleSynthesizer implements Synthesizer {
     private final TextToSpeechClient textToSpeechClient;
     private final SoundFilesUtils soundFilesUtils;
 
 
-    public GoogleSynthesizerService(final TextToSpeechClient textToSpeechClient,
-                                    final SoundFilesUtils soundFilesUtils) {
+    public GoogleSynthesizer(final TextToSpeechClient textToSpeechClient,
+                             final SoundFilesUtils soundFilesUtils) {
         this.textToSpeechClient = textToSpeechClient;
         this.soundFilesUtils = soundFilesUtils;
     }
@@ -64,5 +68,10 @@ public class GoogleSynthesizerService implements SynthesizerService {
         } catch (IOException e) {
             throw new SynthesizeException(e);
         }
+    }
+
+    @Override
+    public Set<Language> getSupportedLanguages() {
+        return Stream.of(Language.HU).collect(Collectors.toSet());
     }
 }
