@@ -1,0 +1,60 @@
+package hu.herolds.projects.morale.service.synthetize
+
+import com.google.cloud.texttospeech.v1.*
+import hu.herolds.projects.morale.config.ApplicationParameters
+import hu.herolds.projects.morale.domain.enums.Language
+import hu.herolds.projects.morale.domain.enums.Language.HU
+import hu.herolds.projects.morale.exception.SynthesizeException
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
+import java.io.FileOutputStream
+import java.nio.file.Path
+
+// https://cloud.google.com/text-to-speech/docs/quickstart-client-libraries#client-libraries-install-java
+@Component("GoogleSynthesizerUtils")
+class GoogleCloudSynthesizer(
+    private val textToSpeechClient: TextToSpeechClient,
+    private val applicationParameters: ApplicationParameters
+): Synthesizer {
+    override val supportedLanguages: Set<Language> = setOf(HU)
+
+    override fun synthesize(text: String): Path {
+        try {
+            // Set the text input to be synthesized
+            val input = SynthesisInput.newBuilder()
+                .setText(text)
+                .build()
+
+            // Build the voice request, select the language code ("en-US") and the ssml voice gender
+            // ("neutral")
+            val voice = VoiceSelectionParams.newBuilder()
+                .setLanguageCode(HU.languageCode)
+                .setSsmlGender(SsmlVoiceGender.NEUTRAL)
+                .build()
+
+            // Select the type of audio file you want returned
+            val audioConfig = AudioConfig.newBuilder()
+                .setAudioEncoding(AudioEncoding.MP3)
+                .build()
+
+            // Perform the text-to-speech request on the text input with the selected voice parameters and
+            // audio file type
+            val response = textToSpeechClient.synthesizeSpeech(input, voice, audioConfig)
+
+            val audioFilePath = applicationParameters.getNextFilePath()
+            FileOutputStream(audioFilePath.toFile()).use { out ->
+                // Get the audio contents from the response
+                out.write(response.audioContent.toByteArray())
+                log.info("Audio content written to file: [$audioFilePath]")
+                return audioFilePath
+            }
+        } catch (ex: Exception) {
+            log.error("Could not synthesize and save audio file.", ex)
+            throw SynthesizeException(ex)
+        }
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(GoogleCloudSynthesizer::class.java)
+    }
+}

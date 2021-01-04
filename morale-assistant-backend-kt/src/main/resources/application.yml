@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:32768/moraleassistant
+    username: postgres
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+sounds:
+  basePath: /tmp/morale-assistant/
+
+googleCredentialsFile: classpath:google_credentials.json
