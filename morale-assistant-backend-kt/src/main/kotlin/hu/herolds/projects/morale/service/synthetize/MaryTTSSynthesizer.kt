@@ -6,6 +6,7 @@ import hu.herolds.projects.morale.domain.enums.Language.EN
 import hu.herolds.projects.morale.exception.SynthesizeException
 import marytts.LocalMaryInterface
 import marytts.util.data.audio.MaryAudioUtils
+import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.nio.file.Path
@@ -20,18 +21,18 @@ class MaryTTSSynthesizer(
 
     override fun synthesize(text: String): Path {
         try {
+            log.info("Synthesizing text: [$text]")
             val audio: AudioInputStream = localMaryInterface.generateAudio(text)
 
             val samples = MaryAudioUtils.getSamplesAsDoubleArray(audio)
             val audioFilePath = applicationParameters.getNextFilePath()
 
-            log.debug("File path to write: [$audioFilePath]")
             MaryAudioUtils.writeWavFile(samples, audioFilePath.toString(), audio.format)
-            log.debug("Output written to: [$audioFilePath]")
+            log.info("Audio content written to file: [$audioFilePath]")
             return audioFilePath
         } catch (ex: Exception) {
             log.error("Could not synthesize and save audio file.", ex)
-            throw SynthesizeException(ex)
+            throw SynthesizeException(cause = ex)
         }
     }
 

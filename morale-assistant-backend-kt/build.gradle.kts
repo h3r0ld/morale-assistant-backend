@@ -2,18 +2,20 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     val kotlinVersion = "1.4.21"
-    kotlin("jvm") version kotlinVersion
-    kotlin("plugin.spring") version kotlinVersion
     // Spring
     id("org.springframework.boot") version "2.4.1"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
+    kotlin("jvm") version kotlinVersion
+    kotlin("kapt") version kotlinVersion
+    kotlin("plugin.spring") version kotlinVersion
 }
 
 group = "hu.herolds.projects.morale"
 version = "1.0.0-SNAPSHOT"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 repositories {
@@ -26,15 +28,26 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.springframework.boot:spring-boot-starter-data-rest")
-    implementation("org.springframework.boot:spring-boot-starter-cache")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-configuration-processor")
+    implementation(kotlin("reflect"))
+
+    implementation(springBootStarter("data-rest"))
+    implementation(springBootStarter("cache"))
+    implementation(springBootStarter("data-jpa"))
+    implementation(springBootStarter("validation"))
+
+    implementation(springBootModule("configuration-processor"))
+
+    runtimeOnly(springBootStarter("aop"))
+
+    implementation("org.springframework.retry:spring-retry:1.3.0")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    implementation("com.google.cloud:google-cloud-texttospeech:0.117.0-beta")
-    implementation("de.dfki.mary:voice-cmu-slt-hsmm:5.2")
+    val googleCloudTTSVersion = "0.117.0-beta"
+    implementation("com.google.cloud:google-cloud-texttospeech:$googleCloudTTSVersion")
+
+    val maryTTSVersion = "5.2"
+    implementation("de.dfki.mary:voice-cmu-slt-hsmm:$maryTTSVersion")
 
     runtimeOnly("org.postgresql:postgresql")
 }
@@ -43,7 +56,7 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = "11"
+            jvmTarget = "1.8"
         }
     }
 
@@ -51,3 +64,9 @@ tasks {
         useJUnitPlatform()
     }
 }
+
+fun DependencyHandler.springBootModule(module: String, version: String? = null): Any =
+    "org.springframework.boot:spring-boot-$module${version?.let { ":$version" } ?: ""}"
+
+fun DependencyHandler.springBootStarter(module: String, version: String? = null): Any =
+    springBootModule(module = "starter-$module", version = version)

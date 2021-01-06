@@ -1,14 +1,18 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:32768/moraleassistant
+    url: jdbc:postgresql://localhost:55000/moraleassistant
     username: postgres
     password:
   jpa:
     hibernate:
       dialect: org.hibernate.dialect.PostgreSQLDialect
-      ddl-auto: create-drop
+      ddl-auto: update
+    show-sql: true
+
+randomJoke:
+  maxAttempts: 5
 
 sounds:
-  basePath: /tmp/morale-assistant/
+  basePath: file:/tmp/morale-assistant/
 
 googleCredentialsFile: classpath:google_credentials.json

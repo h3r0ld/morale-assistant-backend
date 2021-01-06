@@ -20,6 +20,8 @@ class GoogleCloudSynthesizer(
 
     override fun synthesize(text: String): Path {
         try {
+            log.info("Synthesizing text: [$text]")
+
             // Set the text input to be synthesized
             val input = SynthesisInput.newBuilder()
                 .setText(text)
@@ -50,7 +52,7 @@ class GoogleCloudSynthesizer(
             }
         } catch (ex: Exception) {
             log.error("Could not synthesize and save audio file.", ex)
-            throw SynthesizeException(ex)
+            throw SynthesizeException(cause = ex)
         }
     }
 
