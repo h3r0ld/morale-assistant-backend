@@ -11,9 +11,9 @@ class JokeDto(
     @get:Null
     val id: Long? = null,
     @get:NotBlank
-    val text: String? = null,
+    val text: String,
     @get:NotNull
-    val language: Language? = null,
+    val language: Language,
     @get:Null
     var soundFile: ByteArray? = null,
 )

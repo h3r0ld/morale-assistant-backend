@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController
 class MoraleAssistantController(
     private val jokeService: JokeService
 ) {
-
     @GetMapping("/{id}")
     fun getJoke(@PathVariable(name = "id", required = true) id: Long): ResponseEntity<JokeDto> {
         log.info("Requested for joke with id: [$id]")

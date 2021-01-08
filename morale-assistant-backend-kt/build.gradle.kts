@@ -8,6 +8,7 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("kapt") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
+    kotlin("plugin.jpa") version kotlinVersion
 }
 
 group = "hu.herolds.projects.morale"
@@ -48,6 +49,8 @@ dependencies {
 
     val maryTTSVersion = "5.2"
     implementation("de.dfki.mary:voice-cmu-slt-hsmm:$maryTTSVersion")
+
+    kapt("org.hibernate:hibernate-jpamodelgen:5.4.27.Final")
 
     runtimeOnly("org.postgresql:postgresql")
 }

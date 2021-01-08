@@ -6,10 +6,13 @@ import hu.herolds.projects.morale.controller.dto.paging.JokeSearchRequest
 import hu.herolds.projects.morale.controller.dto.paging.PagedResponse
 import hu.herolds.projects.morale.controller.dto.paging.toPagedResponse
 import hu.herolds.projects.morale.domain.Joke
+import hu.herolds.projects.morale.domain.Joke_
 import hu.herolds.projects.morale.domain.enums.Language
 import hu.herolds.projects.morale.exception.GetRandomJokeException
 import hu.herolds.projects.morale.exception.ResourceNotFoundException
 import hu.herolds.projects.morale.repository.JokeRepository
+import hu.herolds.projects.morale.util.and
+import hu.herolds.projects.morale.util.likeIgnoreCase
 import hu.herolds.projects.morale.util.toByteArray
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageRequest
@@ -33,41 +36,33 @@ class JokeService(
         return jokeRepository.findAll({ root, _, cb ->
             val predicates = mutableListOf<Predicate>()
             if (!request.text.isNullOrBlank()) {
-                predicates.add(cb.like(root.get("text"), "%${request.text}%"))
+                predicates.add(cb.likeIgnoreCase(path = root.get(Joke_.text), value = request.text))
             }
             if (request.language != null) {
-                predicates.add(cb.equal(root.get<Language>("language"), request.language))
+                predicates.add(cb.equal(root.get(Joke_.language), request.language))
             }
 
-            cb.and(*predicates.toTypedArray())
+            cb.and(predicates)
         }, pageRequest).toPagedResponse(Joke::mapToJokeDto)
     }
 
     fun saveJoke(jokeDto: JokeDto) {
-        var joke: Joke = jokeDto.let {
-            Joke(
-                language = it.language,
-                text = it.text,
-                soundFilePath = synthesizerService.synthesize(it.language!!, it.text!!).toUri()
-            )
-        }
-        joke = jokeRepository.save(joke)
+        val joke = updateJoke(Joke(language = jokeDto.language, text = jokeDto.text), jokeDto)
         log.info("Saved new joke: [${joke.id}]")
     }
 
-    fun getJoke(id: Long): JokeDto {
-        val joke = jokeRepository.findByIdOrNull(id)
-            ?: throw ResourceNotFoundException(id = id, message = "Joke not found with id: [$id]")
-
-        return joke.mapToJokeDto(withSoundFile = true)
+    fun updateJoke(id: Long, jokeDto: JokeDto) {
+        updateJoke(getJokeById(id), jokeDto)
+        log.info("Updated joke (id: [$id])")
     }
 
+    fun getJoke(id: Long): JokeDto =  getJokeById(id).mapToJokeDto(withSoundFile = true)
+
     fun deleteJoke(id: Long) {
-        val joke = jokeRepository.findByIdOrNull(id)
-            ?: throw ResourceNotFoundException(id = id, message = "Joke not found with id: [$id]")
+        val joke = getJokeById(id)
 
         joke.soundFilePath?.let { uri ->
-            val soundFile = File(uri)
+            val soundFile = File(uri.path)
             if (soundFile.exists()) {
                 val success = soundFile.delete()
                 if (success) {
@@ -113,7 +108,19 @@ class JokeService(
             language = Language.EN,
             text = "You know what's a complete joke? This site, and when it can't find the next joke for you! :(",
         ).apply {
-            soundFile = synthesizerService.synthesize(this.language!!, this.text!!).toUri().toByteArray()
+            soundFile = synthesizerService.synthesize(this.language, this.text).toUri().toByteArray()
+        }
+
+    private fun getJokeById(id: Long): Joke = jokeRepository.findByIdOrNull(id)
+        ?: throw ResourceNotFoundException(id = id, message = "Joke not found with id: [$id]")
+
+    private fun updateJoke(joke: Joke, jokeDto: JokeDto): Joke =
+        joke.apply {
+                language = jokeDto.language
+                text = jokeDto.text
+                soundFilePath = synthesizerService.synthesize(jokeDto.language, jokeDto.text).toUri()
+        }.let {
+            jokeRepository.save(it)
         }
 
     companion object {

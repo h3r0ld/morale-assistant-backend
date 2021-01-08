@@ -21,6 +21,12 @@ class JokeController(
         jokeService.saveJoke(jokeDto)
     }
 
+    @PutMapping("/{id}")
+    fun updateJoke(@RequestBody @Validated jokeDto: JokeDto, @PathVariable("id") id: Long) {
+        log.info("Updating joke with id: [${id}]")
+        jokeService.updateJoke(id, jokeDto)
+    }
+
     @DeleteMapping("/{id}")
     fun deleteJoke(@PathVariable("id") id: Long) {
         log.info("Deleting joke with id: [$id]")
