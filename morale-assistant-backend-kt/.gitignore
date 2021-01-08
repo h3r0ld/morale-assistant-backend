@@ -47,3 +47,5 @@ build/
 .gradle
 
 google_credentials.json
+
+*.log

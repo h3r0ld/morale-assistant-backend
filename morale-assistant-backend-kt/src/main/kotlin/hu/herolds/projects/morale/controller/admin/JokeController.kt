@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity.ok
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
+@CrossOrigin
 @RestController
 @RequestMapping("/admin/joke/")
 class JokeController(
