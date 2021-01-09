@@ -2,7 +2,6 @@ package hu.herolds.projects.morale.controller.dto
 
 import hu.herolds.projects.morale.domain.Joke
 import hu.herolds.projects.morale.domain.enums.Language
-import hu.herolds.projects.morale.util.toByteArray
 import java.time.LocalDateTime
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
@@ -32,6 +31,6 @@ fun Joke.mapToJokeDto(withSoundFile: Boolean = false): JokeDto = JokeDto(
 
 ).also { dto ->
     if (withSoundFile) {
-        dto.soundFile = this.soundFilePath.toByteArray()
+        dto.soundFile = this.getSoundFile()
     }
 }

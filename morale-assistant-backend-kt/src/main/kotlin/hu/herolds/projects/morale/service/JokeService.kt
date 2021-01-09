@@ -10,6 +10,7 @@ import hu.herolds.projects.morale.domain.Joke_
 import hu.herolds.projects.morale.domain.enums.Language
 import hu.herolds.projects.morale.exception.GetRandomJokeException
 import hu.herolds.projects.morale.exception.ResourceNotFoundException
+import hu.herolds.projects.morale.exception.SoundFileNotFoundException
 import hu.herolds.projects.morale.repository.JokeRepository
 import hu.herolds.projects.morale.util.and
 import hu.herolds.projects.morale.util.likeIgnoreCase
@@ -56,7 +57,10 @@ class JokeService(
         log.info("Updated joke (id: [$id])")
     }
 
-    fun getJoke(id: Long): JokeDto =  getJokeById(id).mapToJokeDto(withSoundFile = true)
+    @Retryable(maxAttempts = 1)
+    fun getJoke(id: Long): JokeDto {
+        return getJokeById(id).mapToJokeDto(withSoundFile = true)
+    }
 
     fun deleteJoke(id: Long) {
         val joke = getJokeById(id)
@@ -82,7 +86,6 @@ class JokeService(
     @Retryable(
         value = [GetRandomJokeException::class],
         maxAttemptsExpression = "\${randomJoke.maxAttempts}",
-        recover = "getGeneralJoke"
     )
     fun getRandomJoke(language: Language): JokeDto {
         log.info("Getting a random joke with language: [$language]")
@@ -92,7 +95,7 @@ class JokeService(
         val jokeIndex = (Math.random() * count).toInt()
         log.debug("Random page index: [$jokeIndex]")
 
-        val singleJokePage = jokeRepository.findAll(PageRequest.of(jokeIndex, 1))
+        val singleJokePage = jokeRepository.findBySoundFilePathNotNull(PageRequest.of(jokeIndex, 1))
         if (singleJokePage.hasContent()) {
             val joke = singleJokePage.content[0]
             log.info("Found a random joke(id: [${joke.id}])")
@@ -106,10 +109,15 @@ class JokeService(
     @Recover
     fun getGeneralJoke(exception: GetRandomJokeException, language: Language): JokeDto = JokeDto(
             language = Language.EN,
-            text = "You know what's a complete joke? This site, and when it can't find the next joke for you! :(",
+            text = GENERAL_JOKE_TEXT,
         ).apply {
             soundFile = synthesizerService.synthesize(this.language, this.text).toUri().toByteArray()
         }
+
+    @Recover
+    fun handleSoundFileNotFound(exception: SoundFileNotFoundException): JokeDto = exception.joke.let {
+        updateJoke(it, JokeDto(text = it.text, language = it.language)).mapToJokeDto(withSoundFile = true)
+    }
 
     private fun getJokeById(id: Long): Joke = jokeRepository.findByIdOrNull(id)
         ?: throw ResourceNotFoundException(id = id, message = "Joke not found with id: [$id]")
@@ -125,5 +133,6 @@ class JokeService(
 
     companion object {
         private val log = LoggerFactory.getLogger(JokeService::class.java)
+        const val GENERAL_JOKE_TEXT = "You know what's a complete joke? This site, and when it can't find the next joke for you! :("
     }
 }

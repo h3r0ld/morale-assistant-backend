@@ -52,6 +52,11 @@ dependencies {
 
     kapt("org.hibernate:hibernate-jpamodelgen:5.4.27.Final")
 
+    testImplementation(springBootStarter("test"))
+    testImplementation("com.h2database:h2")
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
+
+
     runtimeOnly("org.postgresql:postgresql")
 }
 

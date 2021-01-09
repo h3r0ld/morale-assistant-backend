@@ -12,10 +12,13 @@ import java.util.*
 @ConfigurationProperties
 data class ApplicationParameters(
     val sounds: SoundsParams,
-    val googleCredentialsFile: Resource
+    val googleCredentialsFile: Resource,
+    val randomJoke: RandomJokeParams,
 ) {
     val baseDirectory: Path = Paths.get(sounds.basePath)
     fun getNextFilePath(): Path = baseDirectory.resolve(UUID.randomUUID().toString() + ".wav")
 }
 
 data class SoundsParams(val basePath: URI)
+
+data class RandomJokeParams(val maxAttempts: Int)

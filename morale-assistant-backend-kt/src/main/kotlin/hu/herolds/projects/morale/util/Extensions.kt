@@ -3,6 +3,7 @@ package hu.herolds.projects.morale.util
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.net.URI
 import javax.persistence.criteria.CriteriaBuilder
@@ -13,10 +14,16 @@ val log: Logger = LoggerFactory.getLogger("Extensions")
 
 fun URI?.toByteArray(): ByteArray? = this?.let {
     try {
-        File(it.path).readBytes()
+        val file = File(it.path)
+
+        if (!file.exists()) {
+            throw FileNotFoundException(it.path)
+        }
+
+        file.readBytes()
     } catch (e: IOException) {
         log.error("Could not load file from URI", e)
-        null
+        throw e
     }
 }
 

@@ -1,6 +1,6 @@
 package hu.herolds.projects.morale.exception
 
-import java.lang.RuntimeException
+import hu.herolds.projects.morale.domain.Joke
 
 sealed class ApplicationException(
     message: String? = null,
@@ -21,7 +21,13 @@ sealed class ResourceException(
     message: String?,
 ): ApplicationException(message)
 
-class ResourceNotFoundException(
+open class ResourceNotFoundException(
     id: Any,
     message: String?,
 ): ResourceException(id, message)
+
+class SoundFileNotFoundException(
+    val joke: Joke,
+    message: String?,
+    cause: Throwable?,
+): ApplicationException(message, cause)

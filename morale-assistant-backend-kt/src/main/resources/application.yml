@@ -7,7 +7,7 @@ spring:
     hibernate:
       dialect: org.hibernate.dialect.PostgreSQLDialect
       ddl-auto: update
-    show-sql: true
+    show-sql: false
 
 randomJoke:
   maxAttempts: 5
