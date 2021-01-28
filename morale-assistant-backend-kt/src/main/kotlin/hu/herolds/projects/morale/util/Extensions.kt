@@ -6,6 +6,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.net.URI
+import java.time.LocalDateTime
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.Path
 import javax.persistence.criteria.Predicate
@@ -31,3 +32,5 @@ fun CriteriaBuilder.likeIgnoreCase(path: Path<String>, value: String)
     = like(lower(path), "%${value.toLowerCase()}%")
 
 fun CriteriaBuilder.and(predicates: List<Predicate>) = and(*predicates.toTypedArray())
+
+fun LocalDateTime.isBetween(from: LocalDateTime, to: LocalDateTime) = isBefore(to) && isAfter(from)

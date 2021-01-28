@@ -47,9 +47,10 @@ class JokeService(
         }, pageRequest).toPagedResponse(Joke::mapToJokeDto)
     }
 
-    fun saveJoke(jokeDto: JokeDto) {
+    fun saveJoke(jokeDto: JokeDto): Long {
         val joke = updateJoke(Joke(language = jokeDto.language, text = jokeDto.text), jokeDto)
         log.info("Saved new joke: [${joke.id}]")
+        return joke.id!!
     }
 
     fun updateJoke(id: Long, jokeDto: JokeDto) {
