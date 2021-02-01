@@ -3,7 +3,11 @@ package hu.herolds.projects.morale.controller.dto.paging
 open class Page(
     val pageIndex: Int,
     val pageSize: Int
-)
+) {
+    override fun toString(): String {
+        return "Page(pageIndex=$pageIndex, pageSize=$pageSize)"
+    }
+}
 
 class Paging(
     pageIndex: Int,
@@ -24,7 +28,7 @@ class PagedResponse<T>(
 fun <Entity, Dto> org.springframework.data.domain.Page<Entity>.toPagedResponse(mapper: (Entity) -> Dto): PagedResponse<Dto> {
     return PagedResponse(content = this.content.map(mapper), paging = Paging(
         pageIndex = this.number,
-        pageSize = this.numberOfElements,
+        pageSize = this.size,
         totalPages = this.totalPages,
         totalElements = this.totalElements)
     )

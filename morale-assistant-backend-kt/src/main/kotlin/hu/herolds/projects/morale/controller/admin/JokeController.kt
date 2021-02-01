@@ -10,9 +10,8 @@ import org.springframework.http.ResponseEntity.ok
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
-@CrossOrigin
 @RestController
-@RequestMapping("/admin/joke/")
+@RequestMapping("/admin/joke")
 class JokeController(
     private val jokeService: JokeService
 ) {
@@ -22,9 +21,20 @@ class JokeController(
         jokeService.saveJoke(jokeDto)
     }
 
+    @GetMapping("/{id}")
+    fun getJoke(@PathVariable("id") id: Long): JokeDto {
+        log.info("Getting joke with id: [$id]")
+        return jokeService.getJoke(id)
+    }
+
+    @GetMapping("/{id}/sound")
+    fun getJokeSound(@PathVariable("id") id: Long): ByteArray? {
+        return jokeService.getJoke(id).soundFile
+    }
+
     @PutMapping("/{id}")
     fun updateJoke(@RequestBody @Validated jokeDto: JokeDto, @PathVariable("id") id: Long) {
-        log.info("Updating joke with id: [${id}]")
+        log.info("Updating joke with id: [$id]")
         jokeService.updateJoke(id, jokeDto)
     }
 
@@ -37,9 +47,9 @@ class JokeController(
     @PostMapping("/search")
     fun searchJokes(
         @RequestBody request: JokeSearchRequest
-    ): ResponseEntity<PagedResponse<JokeDto>> {
+    ): PagedResponse<JokeDto> {
         log.info("Searching jokes: [$request]")
-        return ok(jokeService.searchJokes(request))
+        return jokeService.searchJokes(request)
     }
 
     companion object {
