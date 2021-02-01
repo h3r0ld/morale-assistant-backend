@@ -14,15 +14,15 @@ class MoraleAssistantController(
     private val jokeService: JokeService
 ) {
     @GetMapping("/{id}")
-    fun getJoke(@PathVariable(name = "id", required = true) id: Long): ResponseEntity<JokeDto> {
+    fun getJoke(@PathVariable(name = "id", required = true) id: Long): JokeDto {
         log.info("Requested for joke with id: [$id]")
-        return ResponseEntity.ok(jokeService.getJoke(id))
+        return jokeService.getJoke(id)
     }
 
     @GetMapping("/random/{lang}")
-    fun getRandomJoke(@PathVariable(name = "lang", required = true) language: Language): ResponseEntity<JokeDto> {
+    fun getRandomJoke(@PathVariable(name = "lang", required = true) language: Language): JokeDto {
         log.info("Requested for a random joke in [$language] language")
-        return ResponseEntity.ok(jokeService.getRandomJoke(language))
+        return jokeService.getRandomJoke(language)
     }
 
     companion object {

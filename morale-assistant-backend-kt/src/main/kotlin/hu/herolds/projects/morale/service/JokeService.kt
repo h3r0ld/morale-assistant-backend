@@ -91,12 +91,12 @@ class JokeService(
     fun getRandomJoke(language: Language): JokeDto {
         log.info("Getting a random joke with language: [$language]")
 
-        val count = jokeRepository.count()
-        log.debug("Joke count: [$count]")
+        val count = jokeRepository.countByLanguage(language)
+        log.debug("[$language] Joke count: [$count]")
         val jokeIndex = (Math.random() * count).toInt()
         log.debug("Random page index: [$jokeIndex]")
 
-        val singleJokePage = jokeRepository.findBySoundFilePathNotNull(PageRequest.of(jokeIndex, 1))
+        val singleJokePage = jokeRepository.findByLanguageAndSoundFilePathNotNull(language, PageRequest.of(jokeIndex, 1))
         if (singleJokePage.hasContent()) {
             val joke = singleJokePage.content[0]
             log.info("Found a random joke(id: [${joke.id}])")
