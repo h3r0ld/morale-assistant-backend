@@ -6,6 +6,7 @@ import hu.herolds.projects.morale.service.JokeService
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 @CrossOrigin
 @RestController
@@ -14,7 +15,7 @@ class MoraleAssistantController(
     private val jokeService: JokeService
 ) {
     @GetMapping("/{id}")
-    fun getJoke(@PathVariable(name = "id", required = true) id: Long): JokeDto {
+    fun getJoke(@PathVariable(name = "id", required = true) id: UUID): JokeDto {
         log.info("Requested for joke with id: [$id]")
         return jokeService.getJoke(id)
     }

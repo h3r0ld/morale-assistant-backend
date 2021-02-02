@@ -4,16 +4,20 @@ import hu.herolds.projects.morale.domain.enums.Language
 import hu.herolds.projects.morale.exception.SoundFileNotFoundException
 import hu.herolds.projects.morale.util.toByteArray
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.UpdateTimestamp
 import java.net.URI
 import java.time.LocalDateTime
+import java.util.UUID
 import javax.persistence.*
 
 @MappedSuperclass
 open class BaseEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long? = null
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", updatable = false, nullable = false)
+    var id: UUID? = null,
 )
 
 @Entity(name = "joke")
@@ -35,3 +39,10 @@ class Joke(
     }
 }
 
+@Entity
+class AdminUser(
+        @Column(name = "username", nullable = false)
+        var username: String,
+        @Column(name = "password", nullable = false)
+        var password: String,
+): BaseEntity()

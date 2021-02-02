@@ -13,6 +13,7 @@ import hu.herolds.projects.morale.domain.enums.Language.EN
 import hu.herolds.projects.morale.exception.ResourceNotFoundException
 import hu.herolds.projects.morale.repository.JokeRepository
 import hu.herolds.projects.morale.testutil.assertEquals
+import hu.herolds.projects.morale.testutil.isVeryClose
 import hu.herolds.projects.morale.util.isBetween
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
@@ -29,6 +30,7 @@ import java.net.URI
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.LocalDateTime.now
+import java.util.UUID
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -70,24 +72,28 @@ class JokeServiceIT(
             assertNotNull(soundFile)
             assertEquals(joke.language, language)
             assertEquals(joke.text, text)
-            assertEquals(joke.created, created)
-            assertEquals(joke.lastModified, lastModified)
+            assertNotNull(created)
+            assertTrue(created!!.isVeryClose(to = joke.created))
+            assertNotNull(lastModified)
+            assertTrue(lastModified!!.isVeryClose(to = joke.lastModified))
         }
     }
 
     @TestFactory
-    fun `test joke managing - non-existent joke`() = listOf<(id: Long)->Unit>(
-        { id -> jokeService.getJoke(id) },
-        { id -> jokeService.deleteJoke(id) },
-        { id -> jokeService.updateJoke(id, JokeDto(text = "Don'tCare", language = EN)) }
-    ).map { call ->
-        // Given
-        val expectedId: Long = 666
-        // When, Then
-        assertThrows<ResourceNotFoundException> {
-            call(expectedId)
-        }.apply {
-            assertEquals(expectedId, id)
+    fun `test joke managing - non-existent joke`() = listOf<Pair<String, (id: UUID)->Unit>>(
+        "getJoke" to { id -> jokeService.getJoke(id) },
+        "deleteJoke" to { id -> jokeService.deleteJoke(id) },
+        "updateJoke" to { id -> jokeService.updateJoke(id, JokeDto(text = "Don'tCare", language = EN)) }
+    ).map { (displayName, call) ->
+        DynamicTest.dynamicTest(displayName) {
+            // Given
+            val expectedId: UUID = UUID.randomUUID()
+            // When, Then
+            assertThrows<ResourceNotFoundException> {
+                call(expectedId)
+            }.apply {
+                assertEquals(expectedId, id)
+            }
         }
     }
 
@@ -106,14 +112,9 @@ class JokeServiceIT(
         jokeService.updateJoke(id = joke.id!!, jokeDto = updateJokeDto)
 
         // Then
-        jokeRepository.findByIdOrNull(joke.id!!)
-            .assertEquals(updateJokeDto)
-
-            .apply {
-            assertNotNull(this)
-            this?.also {
-                assertEquals(updateJokeDto.text, updateJokeDto.)
-            }
+        jokeRepository.findByIdOrNull(joke.id!!)!!.apply {
+            assertEquals(updateJokeDto.text, text)
+            assertEquals(updateJokeDto.language, language)
         }
     }
 
@@ -156,11 +157,6 @@ class JokeServiceRetryableIT(
     @SpyBean
     private lateinit var jokeService: JokeService
 
-//    @BeforeEach
-//    override fun initialize() {
-//        super.initialize()
-//    }
-
     @AfterEach
     override fun cleanup() {
         super.cleanup()
@@ -168,7 +164,7 @@ class JokeServiceRetryableIT(
     }
 
     @TestFactory
-    fun `test handleSoundFileNotFound recoveries`() = listOf<Pair<String,(controller: MoraleAssistantController, joke: Joke) -> ResponseEntity<JokeDto>>> (
+    fun `test handleSoundFileNotFound recoveries`() = listOf<Pair<String,(controller: MoraleAssistantController, joke: Joke) -> JokeDto>> (
         "getJoke" to { controller, joke -> controller.getJoke(joke.id!!) },
         "getRandomJoke" to {controller, _ ->  controller.getRandomJoke(Language.HU)}
     ).map { (displayName, call) ->
@@ -184,7 +180,7 @@ class JokeServiceRetryableIT(
                 soundFilePath = URI("non-existent-path/1.wav")
             ))
 
-            val jokeDto = call(moraleAssistantController, joke).body!!
+            val jokeDto = call(moraleAssistantController, joke)
 
             verify(jokeService, times(1)).handleSoundFileNotFound(any())
 
@@ -202,7 +198,7 @@ class JokeServiceRetryableIT(
         setupNextSynthesize()
 
         // When, Then
-        moraleAssistantController.getRandomJoke(language = EN).body!!.apply {
+        moraleAssistantController.getRandomJoke(language = EN).apply {
             assertNull(id)
             assertNull(created)
             assertNull(lastModified)

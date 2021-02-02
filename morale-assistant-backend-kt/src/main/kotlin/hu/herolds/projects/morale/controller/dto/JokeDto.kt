@@ -3,6 +3,7 @@ package hu.herolds.projects.morale.controller.dto
 import hu.herolds.projects.morale.domain.Joke
 import hu.herolds.projects.morale.domain.enums.Language
 import java.time.LocalDateTime
+import java.util.UUID
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Null
@@ -13,7 +14,7 @@ data class JokeDto(
     @get:NotNull
     val language: Language,
     @get:Null
-    val id: Long? = null,
+    val id: UUID? = null,
     @get:Null
     val created: LocalDateTime? = null,
     @get:Null

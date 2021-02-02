@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 @RestController
 @RequestMapping("/admin/joke")
@@ -22,24 +23,24 @@ class JokeController(
     }
 
     @GetMapping("/{id}")
-    fun getJoke(@PathVariable("id") id: Long): JokeDto {
+    fun getJoke(@PathVariable("id") id: UUID): JokeDto {
         log.info("Getting joke with id: [$id]")
         return jokeService.getJoke(id)
     }
 
     @GetMapping("/{id}/sound")
-    fun getJokeSound(@PathVariable("id") id: Long): ByteArray? {
+    fun getJokeSound(@PathVariable("id") id: UUID): ByteArray? {
         return jokeService.getJoke(id).soundFile
     }
 
     @PutMapping("/{id}")
-    fun updateJoke(@RequestBody @Validated jokeDto: JokeDto, @PathVariable("id") id: Long) {
+    fun updateJoke(@RequestBody @Validated jokeDto: JokeDto, @PathVariable("id") id: UUID) {
         log.info("Updating joke with id: [$id]")
         jokeService.updateJoke(id, jokeDto)
     }
 
     @DeleteMapping("/{id}")
-    fun deleteJoke(@PathVariable("id") id: Long) {
+    fun deleteJoke(@PathVariable("id") id: UUID) {
         log.info("Deleting joke with id: [$id]")
         jokeService.deleteJoke(id)
     }

@@ -38,10 +38,3 @@ class ApplicationConfig {
         private val log = LoggerFactory.getLogger(ApplicationConfig::class.java)
     }
 }
-
-@Configuration
-class WebConfig: WebMvcConfigurer {
-    override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**")
-    }
-}

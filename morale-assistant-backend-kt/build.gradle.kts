@@ -35,6 +35,7 @@ dependencies {
     implementation(springBootStarter("cache"))
     implementation(springBootStarter("data-jpa"))
     implementation(springBootStarter("validation"))
+    implementation(springBootStarter("security"))
 
     implementation(springBootModule("configuration-processor"))
 

@@ -12,10 +12,6 @@ class SynthesizeException(
     cause: Throwable? = null
 ): ApplicationException(message, cause)
 
-class GetRandomJokeException(
-    message: String?
-): ApplicationException(message)
-
 sealed class ResourceException(
     val id: Any,
     message: String?,
@@ -25,6 +21,10 @@ open class ResourceNotFoundException(
     id: Any,
     message: String?,
 ): ResourceException(id, message)
+
+class GetRandomJokeException(
+        message: String?
+): ResourceNotFoundException(id = "RANDOM_JOKE", message = message)
 
 class SoundFileNotFoundException(
     val joke: Joke,

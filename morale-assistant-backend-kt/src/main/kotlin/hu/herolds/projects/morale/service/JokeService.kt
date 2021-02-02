@@ -23,6 +23,7 @@ import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.File
+import java.util.UUID
 import javax.persistence.criteria.Predicate
 
 @Service
@@ -47,23 +48,25 @@ class JokeService(
         }, pageRequest).toPagedResponse(Joke::mapToJokeDto)
     }
 
-    fun saveJoke(jokeDto: JokeDto): Long {
+    fun saveJoke(jokeDto: JokeDto): UUID {
         val joke = updateJoke(Joke(language = jokeDto.language, text = jokeDto.text), jokeDto)
         log.info("Saved new joke: [${joke.id}]")
         return joke.id!!
     }
 
-    fun updateJoke(id: Long, jokeDto: JokeDto) {
+    fun updateJoke(id: UUID, jokeDto: JokeDto) {
         updateJoke(getJokeById(id), jokeDto)
         log.info("Updated joke (id: [$id])")
     }
 
-    @Retryable(maxAttempts = 1)
-    fun getJoke(id: Long): JokeDto {
+    @Retryable(
+            include = [SoundFileNotFoundException::class], maxAttempts = 1,
+            exclude = [ResourceNotFoundException::class])
+    fun getJoke(id: UUID): JokeDto {
         return getJokeById(id).mapToJokeDto(withSoundFile = true)
     }
 
-    fun deleteJoke(id: Long) {
+    fun deleteJoke(id: UUID) {
         val joke = getJokeById(id)
 
         joke.soundFilePath?.let { uri ->
@@ -120,7 +123,12 @@ class JokeService(
         updateJoke(it, JokeDto(text = it.text, language = it.language)).mapToJokeDto(withSoundFile = true)
     }
 
-    private fun getJokeById(id: Long): Joke = jokeRepository.findByIdOrNull(id)
+    @Recover
+    fun handleResourceNotFound(exception: ResourceNotFoundException): JokeDto {
+        throw exception
+    }
+
+    private fun getJokeById(id: UUID): Joke = jokeRepository.findByIdOrNull(id)
         ?: throw ResourceNotFoundException(id = id, message = "Joke not found with id: [$id]")
 
     private fun updateJoke(joke: Joke, jokeDto: JokeDto): Joke =
