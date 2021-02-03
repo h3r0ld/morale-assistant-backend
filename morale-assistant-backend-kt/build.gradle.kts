@@ -5,20 +5,25 @@ plugins {
     // Spring
     id("org.springframework.boot") version "2.4.1"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
+    // Docker
+    id("com.palantir.docker") version "0.26.0"
+    // Kotlin
     kotlin("jvm") version kotlinVersion
     kotlin("kapt") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion
 }
 
-group = "hu.herolds.projects.morale"
-version = "1.0.0-SNAPSHOT"
-
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+docker {
+    val bootJar by tasks.bootJar
+    name = "h3r0ld/morale-assistant-backend:$version"
+    files(File("$buildDir/libs/${bootJar.archiveFileName.get()}"))
+}
 repositories {
     mavenCentral()
     jcenter()
