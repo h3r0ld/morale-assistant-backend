@@ -1,0 +1,50 @@
+############################
+# This Docker Compose file contains two services and a database:
+#    Morale-Assistant API Server
+#    Morale-Assistant Frontend
+#    Postgres Database
+############################
+services:
+  # PostgreSQL database
+  morale-assistant-database:
+    image: postgres
+    container_name: morale-assistant-database
+    volumes:
+    - morale-assistant-database-data:/var/lib/postgresql/data
+    ports:
+    - '5432:5432'
+    environment:
+      - POSTGRES_DB=moraleassistant
+      - POSTGRES_USER=moraleassistant
+      - POSTGRES_PASSWORD=password
+
+  # Spring Boot backend
+  morale-assistant-api-server:
+    image: h3r0ld/morale-assistant-backend:1.0.0-SNAPSHOT
+    depends_on:
+      - morale-assistant-database
+    user: morale-admin:morale-assistant
+    ports:
+    - '8080:8080'
+    environment:
+      - DB_SERVER=morale-assistant-database
+      - POSTGRES_DB=moraleassistant
+      - POSTGRES_USER=moraleassistant
+      - POSTGRES_PASSWORD=password
+      - SOUNDS_BASE_PATH=file:/morale-assistant/sounds/
+      - GOOGLE_CREDENTIALS_FILE=file:/morale-assistant/config/google_credentials.json
+
+  # Angular frontend
+  morale-assistant-frontend:
+    image: h3r0ld/morale-assistant-frontend:1.0.0-SNAPSHOT
+    depends_on:
+      - morale-assistant-api-server
+    ports:
+    - "4200:80"
+
+# Volumes for DB data
+volumes:
+  morale-assistant-database-data:
+  morale-assistant-backend-data:
+
+
