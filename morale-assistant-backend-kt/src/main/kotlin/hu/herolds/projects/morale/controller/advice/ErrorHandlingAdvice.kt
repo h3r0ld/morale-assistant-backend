@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 
 @RestControllerAdvice
 class ErrorHandlingAdvice {
@@ -31,6 +32,13 @@ class ErrorHandlingAdvice {
         return exception.toErrorResponse()
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+    @ResponseStatus(BAD_REQUEST)
+    fun handleValidationException(exception: MethodArgumentTypeMismatchException): ErrorResponse {
+        log.error(VALIDATION_ERROR_TITLE, exception)
+        return ErrorResponse(listOf(ErrorDto(title = VALIDATION_ERROR_TITLE, details = "Looks like something was not right with your request!")))
+    }
+
     @ExceptionHandler(ResourceNotFoundException::class)
     @ResponseStatus(NOT_FOUND)
     fun handleResourceNotFoundException(exception: ResourceNotFoundException): ErrorResponse {
@@ -43,6 +51,13 @@ class ErrorHandlingAdvice {
     fun handleApplicationException(exception: ApplicationException): ErrorResponse {
         log.error("Handled error occured", exception)
         return ErrorResponse(listOf(ErrorDto(title = "Error", details = exception.message!!)))
+    }
+
+    @ExceptionHandler(Exception::class)
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    fun handleUnexpectedException(exception: Exception): ErrorResponse {
+        log.error("Unexpected exception", exception)
+        return ErrorResponse(listOf(ErrorDto(title = "Error", details = "Unexpected error. :(")))
     }
 
     companion object {
