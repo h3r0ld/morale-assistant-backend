@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 trigger:
-- main
+- development
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -16,7 +16,7 @@ steps:
     gradleWrapperFile: 'morale-assistant-backend-kt/gradlew'
     gradleOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.11'
+    jdkVersionOption: '1.8'
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
     testResultsFiles: '**/TEST-*.xml'
