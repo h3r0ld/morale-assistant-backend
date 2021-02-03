@@ -1,0 +1,14 @@
+server:
+  servlet:
+    context-path: "/api/"
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_SERVER}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+sounds:
+  base-path: ${SOUNDS_BASE_PATH}
+
+google-credentials-file: ${GOOGLE_CREDENTIALS_FILE}

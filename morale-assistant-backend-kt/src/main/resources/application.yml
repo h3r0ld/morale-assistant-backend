@@ -10,9 +10,9 @@ spring:
     show-sql: false
 
 randomJoke:
-  maxAttempts: 5
+  max-attempts: 5
 
 sounds:
-  basePath: file:/tmp/morale-assistant/
+  base-path: file:/tmp/morale-assistant/
 
-googleCredentialsFile: classpath:google_credentials.json
+google-credentials-file: classpath:google_credentials.json

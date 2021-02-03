@@ -22,7 +22,10 @@ java {
 docker {
     val bootJar by tasks.bootJar
     name = "h3r0ld/morale-assistant-backend:$version"
-    files(File("$buildDir/libs/${bootJar.archiveFileName.get()}"))
+    files(
+            File("$buildDir/libs/${bootJar.archiveFileName.get()}"),
+            File(System.getenv("GOOGLE_CREDENTIALS_FILE_PATH") ?: "$projectDir/src/main/resources/google_credentials.json" )
+    )
 }
 repositories {
     mavenCentral()
