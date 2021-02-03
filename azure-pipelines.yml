@@ -6,6 +6,9 @@
 trigger:
 - development
 
+variables:
+ - group: maven-repository-access
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -20,4 +23,4 @@ steps:
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
     testResultsFiles: '**/TEST-*.xml'
-    tasks: 'clean build -x test'
+    tasks: 'clean build publish -x test -PazureDevOpsRepoUrl=$(azureDevOpsRepoUrl) -PazureDevOpsUsername=$(azureDevOpsUsername) -PazureDevOpsPassword=$(azureDevOpsPassword)'
