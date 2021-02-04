@@ -36,4 +36,4 @@ steps:
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
     testResultsFiles: '**/TEST-*.xml'
-    tasks: 'release -PazureDevOpsRepoUrl=$(azureDevOpsRepoUrl) -PazureDevOpsUsername=$(azureDevOpsUsername) -PazureDevOpsPassword=$(azureDevOpsPassword)'
+    tasks: '-d release -PazureDevOpsRepoUrl=$(azureDevOpsRepoUrl) -PazureDevOpsUsername=$(azureDevOpsUsername) -PazureDevOpsPassword=$(azureDevOpsPassword)'
