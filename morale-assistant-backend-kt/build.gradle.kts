@@ -14,6 +14,8 @@ plugins {
     kotlin("plugin.jpa") version kotlinVersion
     // Maven publish
     id("maven-publish")
+    // Release
+    id("net.researchgate.release") version "2.8.1"
 }
 
 java {
@@ -24,6 +26,8 @@ java {
 docker {
     val bootJar by tasks.bootJar
     name = "h3r0ld/morale-assistant-backend:$version"
+    tag("latest", "latest")
+    tag(version.toString(), version.toString())
     files(
             File("$buildDir/libs/${bootJar.archiveFileName.get()}"),
             File(System.getenv("GOOGLE_CREDENTIALS_FILE_PATH") ?: "$projectDir/src/main/resources/google_credentials.json" )
@@ -94,6 +98,19 @@ tasks {
 
     withType<Test> {
         useJUnitPlatform()
+    }
+
+    val docker by getting {
+        val build by getting
+        dependsOn(build)
+    }
+
+    val afterReleaseBuild by getting {
+        val publish by getting
+        val dockerTagsPush by getting
+
+        dependsOn(publish)
+        dependsOn(dockerTagsPush)
     }
 }
 
