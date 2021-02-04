@@ -6,7 +6,7 @@ name: morale-assistant-backend-release
 
 # Only build if changes are pushed to master
 trigger:
-  - master
+- master
 # Don't build on pull requests
 pr: none
 
