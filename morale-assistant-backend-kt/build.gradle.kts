@@ -25,8 +25,8 @@ java {
 
 docker {
     val bootJar by tasks.bootJar
-    name = "hub.docker.com/h3r0ld/morale-assistant-backend"
-    tag("latest", "hub.docker.com/h3r0ld/morale-assistant-backend:latest")
+    name = "h3r0ld/morale-assistant-backend"
+    tag("latest", "h3r0ld/morale-assistant-backend:latest")
 //    tag(version.toString(), "hub.docker.com/h3r0ld/morale-assistant-backend:$version")
     files(
             File("$buildDir/libs/${bootJar.archiveFileName.get()}"),
