@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import hu.herolds.projects.morale.IntegrationTest
 import hu.herolds.projects.morale.config.ApplicationParameters
 import hu.herolds.projects.morale.controller.MoraleAssistantController
 import hu.herolds.projects.morale.controller.dto.JokeDto
@@ -32,8 +33,7 @@ import java.nio.file.Paths
 import java.time.LocalDateTime.now
 import java.util.UUID
 
-@SpringBootTest
-@ActiveProfiles("test")
+@IntegrationTest
 class JokeServiceIT(
     @Autowired private val jokeRepository: JokeRepository,
 ) {
@@ -147,8 +147,7 @@ class JokeServiceIT(
     }
 }
 
-@SpringBootTest
-@ActiveProfiles("test")
+@IntegrationTest
 class JokeServiceRetryableIT(
     @Autowired private val moraleAssistantController: MoraleAssistantController,
     @Autowired private val applicationParameters: ApplicationParameters,
