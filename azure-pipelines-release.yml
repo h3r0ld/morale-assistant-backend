@@ -17,6 +17,10 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- task: CmdLine@2
+  displayName: Checkout ${Build.SourceBranchName}
+  inputs:
+    script: 'git checkout ${Build.SourceBranchName}'
 - task: Gradle@2
   inputs:
     workingDirectory: 'morale-assistant-backend-kt'
