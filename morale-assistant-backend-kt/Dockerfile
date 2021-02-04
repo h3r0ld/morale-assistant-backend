@@ -14,7 +14,7 @@ WORKDIR /morale-assistant
 
 ARG JAR_FILE=*.jar
 
-COPY google_credentials.json config/google_credentials.json
+# COPY google_credentials.json config/google_credentials.json
 COPY ${JAR_FILE} morale-assistant.jar
 
 
