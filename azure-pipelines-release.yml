@@ -18,9 +18,9 @@ pool:
 
 steps:
 - task: CmdLine@2
-  displayName: Checkout ${Build.SourceBranchName}
+  displayName: Checkout $(Build.SourceBranchName)
   inputs:
-    script: 'git checkout ${Build.SourceBranchName}'
+    script: 'git checkout $(Build.SourceBranchName)'
 - task: Gradle@2
   inputs:
     workingDirectory: 'morale-assistant-backend-kt'
