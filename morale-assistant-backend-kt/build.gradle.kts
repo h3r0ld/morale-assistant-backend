@@ -12,6 +12,8 @@ plugins {
     kotlin("kapt") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion
+    // Maven publish
+    id("maven-publish")
 }
 
 java {
@@ -27,11 +29,24 @@ docker {
             File(System.getenv("GOOGLE_CREDENTIALS_FILE_PATH") ?: "$projectDir/src/main/resources/google_credentials.json" )
     )
 }
+
+val azureDevOpsRepoUrl: String by extra
+val azureDevOpsUsername: String by extra
+val azureDevOpsPassword: String by extra
+
 repositories {
     mavenCentral()
     jcenter()
     maven {
         url = uri("https://repo.spring.io/milestone")
+    }
+    maven {
+        name = "Azure DevOps Maven Artifactory"
+        url = uri(azureDevOpsRepoUrl)
+        credentials {
+            username = azureDevOpsUsername
+            password = azureDevOpsPassword
+        }
     }
 }
 
@@ -79,6 +94,42 @@ tasks {
 
     withType<Test> {
         useJUnitPlatform()
+    }
+}
+
+publishing {
+    publications {
+        val bootJar by tasks.bootJar
+
+        create<MavenPublication>("mavenJava") {
+            artifact(bootJar)
+        }
+
+        create<MavenPublication>("DockerFile") {
+            val dockerFile = "$projectDir/Dockerfile"
+            artifact(dockerFile) {
+                artifactId = "Dockerfile"
+            }
+        }
+
+        create<MavenPublication>("dockerCompose") {
+            val dockerComposeFile = "$projectDir/../docker-compose.yml"
+            artifact(dockerComposeFile) {
+                artifactId = "docker-compose"
+                extension = "yml"
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "azure-devops"
+            url = uri(azureDevOpsRepoUrl)
+            credentials {
+                username = azureDevOpsUsername
+                password = azureDevOpsPassword
+            }
+        }
     }
 }
 
