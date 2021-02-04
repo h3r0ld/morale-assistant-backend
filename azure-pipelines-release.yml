@@ -4,8 +4,11 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 name: morale-assistant-backend-release
 
+# Only build if changes are pushed to master
 trigger:
-- master
+  - master
+# Don't build on pull requests
+pr: none
 
 variables:
  - group: maven-repository-access
