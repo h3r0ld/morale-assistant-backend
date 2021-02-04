@@ -22,7 +22,10 @@ steps:
   displayName: Checkout $(Build.SourceBranchName)
   inputs:
     script: 'git checkout $(Build.SourceBranchName)'
-
+- task: CmdLine@2
+  displayName: Set remote URL with authentication
+  inputs:
+    script: 'git config remote.origin.url "https://$(github.token)@github.com/$(github.username)/morale-assistant-backend.git"'
 - task: Gradle@2
   inputs:
     workingDirectory: 'morale-assistant-backend-kt'
