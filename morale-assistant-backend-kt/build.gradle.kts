@@ -107,10 +107,10 @@ tasks {
 
     val afterReleaseBuild by getting {
         val publish by getting
-        val dockerTagsPush by getting
+        val dockerPushLatest by getting
 
         dependsOn(publish)
-        dependsOn(dockerTagsPush)
+        dependsOn(dockerPushLatest)
     }
 }
 
