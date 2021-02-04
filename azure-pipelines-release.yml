@@ -27,7 +27,7 @@ steps:
 - task: CmdLine@2
   displayName: Set remote URL with authentication
   inputs:
-    script: 'git config remote.origin.url "git@github.com/$(github.username)/morale-assistant-backend.git"'
+    script: 'git config remote.origin.url "git@github.com:$(github.username)/morale-assistant-backend.git"'
 - task: CmdLine@2
   displayName: Checkout $(Build.SourceBranchName)
   inputs:
