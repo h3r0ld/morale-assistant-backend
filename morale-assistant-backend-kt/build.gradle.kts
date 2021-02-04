@@ -25,9 +25,9 @@ java {
 
 docker {
     val bootJar by tasks.bootJar
-    name = "morale-assistant-backend:$version"
+    name = "hub.docker.com/h3r0ld/morale-assistant-backend"
     tag("latest", "latest")
-    tag(version.toString(), version.toString())
+    tag(version.toString(), "hub.docker.com/h3r0ld/morale-assistant-backend:$version")
     files(
             File("$buildDir/libs/${bootJar.archiveFileName.get()}"),
             File(System.getenv("GOOGLE_CREDENTIALS_FILE_PATH") ?: "$projectDir/src/main/resources/google_credentials.json" )
