@@ -32,6 +32,11 @@ steps:
   displayName: Checkout $(Build.SourceBranchName)
   inputs:
     script: 'git checkout $(Build.SourceBranchName)'
+- task: Docker@2
+  inputs:
+    containerRegistry: 'Docker HUB  - h3r0ld'
+    command: 'login'
+    addPipelineData: false
 - task: Gradle@2
   inputs:
     workingDirectory: 'morale-assistant-backend-kt'
