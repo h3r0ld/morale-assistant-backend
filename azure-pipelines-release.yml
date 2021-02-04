@@ -21,8 +21,8 @@ steps:
 - task: InstallSSHKey@0
   inputs:
     knownHostsEntry: 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=='
-    sshPublicKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCmo0yQyLwtlkRcizPIVderHWuXYpUgovvKc0xvRdENqaGVa6C5obpAimY+zFMRurpqnvPCXUvS94j+qJEXb99XWe0lwwQtkkdu/PT2Xg7uvqKfmxh4OppVXcJNnOh1SEjRu1o5qZmSPFomaAVRJGaHrFXD7d3954XdQhsARLRcAjK890yZ69i8xBxVtQHGNwp4ps3HX9er4uIoxBwy66M7TqT/GH/IJzQ5w9c7GHAlyICBkgqNvPhIZzzdZ5jRpuEOfDIAMPOLw3X3IYNnKeXdSwB3f0tE6oqbLl7SvIax0VAjoRN4U8PfVaFZ2LiKWrPIzhB+g5wXIC0VQSi1puOGrviaBL36KqsUJFbNf3nB0HAFl1sLNWnqWUM16zAcet8d7cZk3Y7T12as/AatIyAjrTGgSPCSspmLxAsANTD1EakjPg6yMb/mul7XsIPiLSQPI6gZ3uu3bvSVzXjSOS8+zHPcQNfP4hIb3XXKMVjqfAjJqDjn/Lr1jSoi0aLy02E= herold.kristof@GPHI-FEJL55'
-    sshPassphrase: 'mageP0w3r'
+    sshPublicKey: $(github.ssh.publicKey)
+    sshPassphrase: $(github.ssh.passphrase)
     sshKeySecureFile: 'github-key'
 - task: CmdLine@2
   displayName: Checkout $(Build.SourceBranchName)
