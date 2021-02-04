@@ -34,6 +34,10 @@ docker {
     )
 }
 
+release {
+    versionPropertyFile = "morale-assistant-backend-kt/gradle.properties"
+}
+
 val azureDevOpsRepoUrl: String by extra
 val azureDevOpsUsername: String by extra
 val azureDevOpsPassword: String by extra
