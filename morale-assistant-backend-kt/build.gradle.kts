@@ -27,7 +27,7 @@ docker {
     val bootJar by tasks.bootJar
     name = "hub.docker.com/h3r0ld/morale-assistant-backend"
     tag("latest", "latest")
-    tag(version.toString(), "hub.docker.com/h3r0ld/morale-assistant-backend:$version")
+//    tag(version.toString(), "hub.docker.com/h3r0ld/morale-assistant-backend:$version")
     files(
             File("$buildDir/libs/${bootJar.archiveFileName.get()}"),
             File(System.getenv("GOOGLE_CREDENTIALS_FILE_PATH") ?: "$projectDir/src/main/resources/google_credentials.json" )
@@ -107,10 +107,10 @@ tasks {
 
     val afterReleaseBuild by getting {
         val publish by getting
-        val dockerPushLatest by getting
+        val dockerTagsPush by getting
 
         dependsOn(publish)
-        dependsOn(dockerPushLatest)
+        dependsOn(dockerTagsPush)
     }
 }
 
