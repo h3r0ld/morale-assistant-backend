@@ -12,7 +12,7 @@ import java.util.*
 @ConfigurationProperties
 data class ApplicationParameters(
     val sounds: SoundsParams,
-    val googleCredentialsFile: Resource,
+    val synthesizer: SynthesizerParams,
     val randomJoke: RandomJokeParams,
 ) {
     val baseDirectory: Path = Paths.get(sounds.basePath)
@@ -22,3 +22,10 @@ data class ApplicationParameters(
 data class SoundsParams(val basePath: URI)
 
 data class RandomJokeParams(val maxAttempts: Int)
+
+data class SynthesizerParams(val google: GoogleSynthesizer)
+
+data class GoogleSynthesizer(
+        val enabled: Boolean,
+        val credentialsFile: Resource?,
+)

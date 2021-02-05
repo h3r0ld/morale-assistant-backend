@@ -11,4 +11,6 @@ spring:
 sounds:
   base-path: ${SOUNDS_BASE_PATH}
 
-google-credentials-file: ${GOOGLE_CREDENTIALS_FILE}
+synthesizer:
+  google:
+    enabled: false
