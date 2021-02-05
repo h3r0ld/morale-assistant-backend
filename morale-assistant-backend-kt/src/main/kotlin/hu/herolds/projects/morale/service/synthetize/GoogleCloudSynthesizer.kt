@@ -1,17 +1,24 @@
 package hu.herolds.projects.morale.service.synthetize
 
-import com.google.cloud.texttospeech.v1.*
+import com.google.cloud.texttospeech.v1.AudioConfig
+import com.google.cloud.texttospeech.v1.AudioEncoding
+import com.google.cloud.texttospeech.v1.SsmlVoiceGender
+import com.google.cloud.texttospeech.v1.SynthesisInput
+import com.google.cloud.texttospeech.v1.TextToSpeechClient
+import com.google.cloud.texttospeech.v1.VoiceSelectionParams
 import hu.herolds.projects.morale.config.ApplicationParameters
 import hu.herolds.projects.morale.domain.enums.Language
 import hu.herolds.projects.morale.domain.enums.Language.HU
 import hu.herolds.projects.morale.exception.SynthesizeException
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
+import org.springframework.stereotype.Service
 import java.io.FileOutputStream
 import java.nio.file.Path
 
 // https://cloud.google.com/text-to-speech/docs/quickstart-client-libraries#client-libraries-install-java
-@Component("GoogleSynthesizerUtils")
+@Service
+@ConditionalOnBean(TextToSpeechClient::class)
 class GoogleCloudSynthesizer(
     private val textToSpeechClient: TextToSpeechClient,
     private val applicationParameters: ApplicationParameters

@@ -6,6 +6,7 @@ import com.google.cloud.texttospeech.v1.TextToSpeechClient
 import com.google.cloud.texttospeech.v1.TextToSpeechSettings
 import marytts.LocalMaryInterface
 import org.slf4j.LoggerFactory
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.retry.annotation.EnableRetry
@@ -17,17 +18,26 @@ class ApplicationConfig {
     @Bean
     fun localMaryInterface(): LocalMaryInterface = LocalMaryInterface().apply {
         log.info("Initialized Mary TTS!")
-        log.info("Available locales: ${this.availableLocales}, available voices: ${this.availableVoices}")
+        log.info("Mary TTS - Available locales: ${this.availableLocales}, available voices: ${this.availableVoices}")
     }
 
     @Bean
+    @ConditionalOnProperty(
+            value = ["synthesizer.google.enabled"],
+            havingValue = "true"
+    )
     fun textToSpeechClient(applicationParameters: ApplicationParameters): TextToSpeechClient {
-        val credentials = GoogleCredentials.fromStream(applicationParameters.googleCredentialsFile.inputStream)
-            .createScoped("https://www.googleapis.com/auth/cloud-platform")
+        if (!applicationParameters.synthesizer.google.credentialsFile!!.exists()) {
+            log.error("Could not find Google credentials JSON file: ${applicationParameters.synthesizer.google.credentialsFile}")
+            throw IllegalArgumentException("Google credentials file does not exist!")
+        }
+
+        val credentials = GoogleCredentials.fromStream(applicationParameters.synthesizer.google.credentialsFile.inputStream)
+                .createScoped("https://www.googleapis.com/auth/cloud-platform")
 
         val textToSpeechSettings = TextToSpeechSettings.newBuilder()
-            .setCredentialsProvider(FixedCredentialsProvider.create(credentials))
-            .build()
+                .setCredentialsProvider(FixedCredentialsProvider.create(credentials))
+                .build()
 
         return TextToSpeechClient.create(textToSpeechSettings)
     }

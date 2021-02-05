@@ -15,4 +15,7 @@ randomJoke:
 sounds:
   base-path: file:/tmp/morale-assistant/
 
-google-credentials-file: classpath:google_credentials.json
+synthesizer:
+  google:
+    enabled: true
+    credentials-file: classpath:google_credentials.json
