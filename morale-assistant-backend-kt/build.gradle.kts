@@ -33,6 +33,10 @@ docker {
     )
 }
 
+release {
+    preCommitText = "[skip ci]"
+}
+
 val azureDevOpsRepoUrl: String by extra
 val azureDevOpsUsername: String by extra
 val azureDevOpsPassword: String by extra
