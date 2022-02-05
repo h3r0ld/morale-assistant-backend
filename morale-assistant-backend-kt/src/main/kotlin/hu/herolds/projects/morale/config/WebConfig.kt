@@ -1,8 +1,14 @@
 package hu.herolds.projects.morale.config
 
 import hu.herolds.projects.morale.service.authentication.AdminUserDetailsService
+import io.swagger.v3.oas.models.Components
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.info.Contact
+import io.swagger.v3.oas.models.info.Info
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.info.BuildProperties
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
@@ -33,7 +39,7 @@ class WebSecurityConfigurer: WebSecurityConfigurerAdapter() {
         authentication
                 .userDetailsService(adminUserDetailsService)
                 // TODO: !!!
-                //.passwordEncoder(NoOpPasswordEncoder.getInstance())
+                .passwordEncoder(NoOpPasswordEncoder.getInstance())
     }
 
     override fun configure(http: HttpSecurity) {
@@ -52,12 +58,17 @@ class WebSecurityConfigurer: WebSecurityConfigurerAdapter() {
 
     companion object {
         private val PUBLIC_URLS = arrayOf(
-                "/morale-boost/**"
+            "/morale-boost/**",
+            "/v3/api-docs",
+            "/swagger-ui.html"
         )
     }
+
 }
 
 class UnauthorizedEntryPoint : AuthenticationEntryPoint {
+private val log = LoggerFactory.getLogger(javaClass)
+
     override fun commence(
             request: HttpServletRequest,
             response: HttpServletResponse,
@@ -65,9 +76,5 @@ class UnauthorizedEntryPoint : AuthenticationEntryPoint {
     ) {
         log.error("Unauthorized access.", authException)
         response.sendError(HttpStatus.UNAUTHORIZED.value())
-    }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(UnauthorizedEntryPoint::class.java)
     }
 }

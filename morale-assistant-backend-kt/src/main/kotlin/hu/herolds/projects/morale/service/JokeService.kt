@@ -3,8 +3,6 @@ package hu.herolds.projects.morale.service
 import hu.herolds.projects.morale.controller.dto.JokeDto
 import hu.herolds.projects.morale.controller.dto.mapToJokeDto
 import hu.herolds.projects.morale.controller.dto.paging.JokeSearchRequest
-import hu.herolds.projects.morale.controller.dto.paging.PagedResponse
-import hu.herolds.projects.morale.controller.dto.paging.toPagedResponse
 import hu.herolds.projects.morale.domain.Joke
 import hu.herolds.projects.morale.domain.Joke_
 import hu.herolds.projects.morale.domain.enums.Language
@@ -16,6 +14,7 @@ import hu.herolds.projects.morale.util.and
 import hu.herolds.projects.morale.util.likeIgnoreCase
 import hu.herolds.projects.morale.util.toByteArray
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.retry.annotation.Recover
@@ -23,8 +22,10 @@ import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.File
-import java.util.UUID
+import java.util.*
 import javax.persistence.criteria.Predicate
+
+const val GENERAL_JOKE_TEXT = "You know what's a complete joke? This site, and when it can't find the next joke for you! :("
 
 @Service
 @Transactional
@@ -32,9 +33,9 @@ class JokeService(
     private val jokeRepository: JokeRepository,
     private val synthesizerService: SynthesizerService,
 ) {
-    fun searchJokes(request: JokeSearchRequest): PagedResponse<JokeDto> {
-        val pageRequest = PageRequest.of(request.page.pageIndex, request.page.pageSize)
+    private val log = LoggerFactory.getLogger(javaClass)
 
+    fun searchJokes(request: JokeSearchRequest): Page<JokeDto> {
         return jokeRepository.findAll({ root, _, cb ->
             val predicates = mutableListOf<Predicate>()
             if (!request.text.isNullOrBlank()) {
@@ -45,7 +46,7 @@ class JokeService(
             }
 
             cb.and(predicates)
-        }, pageRequest).toPagedResponse(Joke::mapToJokeDto)
+        }, request.toPageRequest()).map(Joke::mapToJokeDto)
     }
 
     fun saveJoke(jokeDto: JokeDto): UUID {
@@ -139,9 +140,4 @@ class JokeService(
         }.let {
             jokeRepository.save(it)
         }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(JokeService::class.java)
-        const val GENERAL_JOKE_TEXT = "You know what's a complete joke? This site, and when it can't find the next joke for you! :("
-    }
 }

@@ -15,6 +15,7 @@ class ApplicationInitializer(
     private val synthesizerService: SynthesizerService,
     private val applicationParameters: ApplicationParameters,
 ): ApplicationListener<ContextRefreshedEvent> {
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         try {
@@ -34,9 +35,5 @@ class ApplicationInitializer(
         } else {
             log.info("Using existing directory for sound files: {}", filePath)
         }
-    }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(ApplicationInitializer::class.java)
     }
 }

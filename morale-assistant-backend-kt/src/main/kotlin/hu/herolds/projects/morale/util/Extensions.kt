@@ -1,9 +1,8 @@
 package hu.herolds.projects.morale.util
 
-import hu.herolds.projects.morale.controller.advice.ErrorHandlingAdvice.Companion.VALIDATION_ERROR_TITLE
+import hu.herolds.projects.morale.controller.advice.VALIDATION_ERROR_TITLE
 import hu.herolds.projects.morale.controller.dto.ErrorDto
 import hu.herolds.projects.morale.controller.dto.ErrorResponse
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.ObjectError
@@ -17,7 +16,7 @@ import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.Path
 import javax.persistence.criteria.Predicate
 
-val log: Logger = LoggerFactory.getLogger("Extensions")
+private val log = LoggerFactory.getLogger("Extensions")
 
 fun URI?.toByteArray(): ByteArray? = this?.let {
     try {
@@ -34,10 +33,9 @@ fun URI?.toByteArray(): ByteArray? = this?.let {
     }
 }
 
-fun CriteriaBuilder.likeIgnoreCase(path: Path<String>, value: String)
-    = like(lower(path), "%${value.toLowerCase()}%")
+fun CriteriaBuilder.likeIgnoreCase(path: Path<String>, value: String): Predicate = like(lower(path), "%${value.toLowerCase()}%")
 
-fun CriteriaBuilder.and(predicates: List<Predicate>) = and(*predicates.toTypedArray())
+fun CriteriaBuilder.and(predicates: List<Predicate>): Predicate = and(*predicates.toTypedArray())
 
 fun LocalDateTime.isBetween(from: LocalDateTime, to: LocalDateTime) = isBefore(to) && isAfter(from)
 

@@ -16,6 +16,9 @@ plugins {
     id("maven-publish")
     // Release
     id("net.researchgate.release") version "2.8.1"
+
+    id("com.github.johnrengelman.processes") version "0.5.0"
+    id("org.springdoc.openapi-gradle-plugin") version "1.3.3"
 }
 
 java {
@@ -35,6 +38,15 @@ docker {
 
 release {
     preCommitText = "[skip ci]"
+}
+
+openApi {
+    outputDir.set(file("$projectDir/.."))
+    outputFileName.set("open-api.json")
+}
+
+springBoot {
+    buildInfo()
 }
 
 val azureDevOpsRepoUrl: String by extra
@@ -81,12 +93,15 @@ dependencies {
     val maryTTSVersion = "5.2"
     implementation("de.dfki.mary:voice-cmu-slt-hsmm:$maryTTSVersion")
 
+    val springdocVersion = "1.6.4"
+    implementation("org.springdoc:springdoc-openapi-ui:$springdocVersion")
+    implementation("org.springdoc:springdoc-openapi-data-rest:$springdocVersion")
+
     kapt("org.hibernate:hibernate-jpamodelgen:5.4.27.Final")
 
     testImplementation(springBootStarter("test"))
     testImplementation("com.h2database:h2")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
-
 
     runtimeOnly("org.postgresql:postgresql")
 }
@@ -122,21 +137,18 @@ publishing {
         val bootJar by tasks.bootJar
 
         create<MavenPublication>("mavenJava") {
-            artifact(bootJar)
-        }
-
-        create<MavenPublication>("DockerFile") {
-            val dockerFile = "$projectDir/Dockerfile"
-            artifact(dockerFile) {
-                artifactId = "Dockerfile"
-            }
-        }
-
-        create<MavenPublication>("dockerCompose") {
+            val openApiFile = "${openApi.outputDir.get()}/${openApi.outputFileName.get()}"
             val dockerComposeFile = "$projectDir/../docker-compose.yml"
-            artifact(dockerComposeFile) {
-                artifactId = "docker-compose"
-                extension = "yml"
+
+            artifacts {
+                artifactId = "morale-assistant-backend"
+                artifact(bootJar)
+                artifact(openApiFile) {
+                    extension = "open-api.json"
+                }
+                artifact(dockerComposeFile) {
+                    extension = "docker-compose.yml"
+                }
             }
         }
     }

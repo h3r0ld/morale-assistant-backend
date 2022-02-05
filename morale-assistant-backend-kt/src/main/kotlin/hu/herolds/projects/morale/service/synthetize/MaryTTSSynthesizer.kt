@@ -17,6 +17,8 @@ class MaryTTSSynthesizer(
     private val localMaryInterface: LocalMaryInterface,
     private val applicationParameters: ApplicationParameters
 ): Synthesizer {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     override val supportedLanguages: Set<Language> = setOf(EN)
 
     override fun synthesize(text: String): Path {
@@ -34,9 +36,5 @@ class MaryTTSSynthesizer(
             log.error("Could not synthesize and save audio file.", ex)
             throw SynthesizeException(cause = ex)
         }
-    }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(MaryTTSSynthesizer::class.java)
     }
 }

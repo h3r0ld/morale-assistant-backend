@@ -1,5 +1,6 @@
 package hu.herolds.projects.morale.controller.dto
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import hu.herolds.projects.morale.domain.Joke
 import hu.herolds.projects.morale.domain.enums.Language
 import java.time.LocalDateTime

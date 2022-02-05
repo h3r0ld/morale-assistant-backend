@@ -8,6 +8,8 @@ import javax.persistence.Converter
 
 @Converter(autoApply = true)
 internal class URIAttributeConverter : AttributeConverter<URI?, String?> {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     override fun convertToDatabaseColumn(uri: URI?): String? {
         return uri?.path
     }
@@ -21,9 +23,5 @@ internal class URIAttributeConverter : AttributeConverter<URI?, String?> {
             log.error("Could not convert to entity attribute (URI)", e)
             null
         }
-    }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(URIAttributeConverter::class.java)
     }
 }

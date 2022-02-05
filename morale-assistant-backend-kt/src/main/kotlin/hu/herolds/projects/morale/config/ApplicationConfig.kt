@@ -4,9 +4,14 @@ import com.google.api.gax.core.FixedCredentialsProvider
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.texttospeech.v1.TextToSpeechClient
 import com.google.cloud.texttospeech.v1.TextToSpeechSettings
+import io.swagger.v3.oas.models.Components
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.info.Contact
+import io.swagger.v3.oas.models.info.Info
 import marytts.LocalMaryInterface
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.info.BuildProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.retry.annotation.EnableRetry
@@ -14,6 +19,7 @@ import org.springframework.retry.annotation.EnableRetry
 @Configuration
 @EnableRetry
 class ApplicationConfig {
+private val log = LoggerFactory.getLogger(javaClass)
 
     @Bean
     fun localMaryInterface(): LocalMaryInterface = LocalMaryInterface().apply {
@@ -42,7 +48,17 @@ class ApplicationConfig {
         return TextToSpeechClient.create(textToSpeechSettings)
     }
 
-    companion object {
-        private val log = LoggerFactory.getLogger(ApplicationConfig::class.java)
-    }
+    @Bean
+    fun openApi2(buildProperties: BuildProperties): OpenAPI = OpenAPI()
+            .components(Components())
+            .info(Info()
+                    .title("Morale Assistant API")
+                    .description("A RESTful service for boosting your morale.")
+                    .version(buildProperties.version)
+                    .contact(Contact()
+                            .name("Kristof Herold")
+                            .url("https://github.com/h3r0ld")
+                            .email("kristof.herold@gmail.com")
+                    )
+            )
 }

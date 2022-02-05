@@ -10,14 +10,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/admin/login")
 class AdminLoginController {
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @GetMapping
     fun login(@AuthenticationPrincipal user: UserDetails): UserDetails {
         log.info("Logged in admin user: [${user.username}]")
         return user
-    }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(AdminLoginController::class.java)
     }
 }

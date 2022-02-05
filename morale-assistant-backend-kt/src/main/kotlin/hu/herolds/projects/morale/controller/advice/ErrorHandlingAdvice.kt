@@ -16,8 +16,12 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 
+const val VALIDATION_ERROR_TITLE: String = "Validation error"
+
 @RestControllerAdvice
 class ErrorHandlingAdvice {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     @ExceptionHandler(MethodArgumentNotValidException::class)
     @ResponseStatus(BAD_REQUEST)
     fun handleValidationException(exception: MethodArgumentNotValidException): ErrorResponse {
@@ -58,10 +62,5 @@ class ErrorHandlingAdvice {
     fun handleUnexpectedException(exception: Exception): ErrorResponse {
         log.error("Unexpected exception", exception)
         return ErrorResponse(listOf(ErrorDto(title = "Error", details = "Unexpected error. :(")))
-    }
-
-    companion object {
-        const val VALIDATION_ERROR_TITLE: String = "Validation error"
-        private val log = LoggerFactory.getLogger(ErrorHandlingAdvice::class.java)
     }
 }

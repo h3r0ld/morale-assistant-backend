@@ -13,6 +13,8 @@ import java.util.UUID
 class MoraleAssistantController(
     private val jokeService: JokeService
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     @GetMapping("/{id}")
     fun getJoke(@PathVariable(name = "id", required = true) id: UUID): JokeDto {
         log.info("Requested for joke with id: [$id]")
@@ -23,9 +25,5 @@ class MoraleAssistantController(
     fun getRandomJoke(@PathVariable(name = "lang", required = true) language: Language): JokeDto {
         log.info("Requested for a random joke in [$language] language")
         return jokeService.getRandomJoke(language)
-    }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(MoraleAssistantController::class.java)
     }
 }
