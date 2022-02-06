@@ -33,7 +33,7 @@ fun URI?.toByteArray(): ByteArray? = this?.let {
     }
 }
 
-fun CriteriaBuilder.likeIgnoreCase(path: Path<String>, value: String): Predicate = like(lower(path), "%${value.toLowerCase()}%")
+fun CriteriaBuilder.likeIgnoreCase(path: Path<String>, value: String): Predicate = like(lower(path), "%${value.lowercase()}%")
 
 fun CriteriaBuilder.and(predicates: List<Predicate>): Predicate = and(*predicates.toTypedArray())
 

@@ -1,45 +1,45 @@
 package hu.herolds.projects.morale.config
 
 import hu.herolds.projects.morale.service.authentication.AdminUserDetailsService
-import io.swagger.v3.oas.models.Components
-import io.swagger.v3.oas.models.OpenAPI
-import io.swagger.v3.oas.models.info.Contact
-import io.swagger.v3.oas.models.info.Info
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.info.BuildProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.AuthenticationException
-import org.springframework.security.crypto.password.NoOpPasswordEncoder
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+
 @Configuration
 class WebConfig: WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
+            .allowedMethods(*HttpMethod.values().map { it.name }.toTypedArray())
     }
 }
 
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfigurer: WebSecurityConfigurerAdapter() {
+    @Bean
+    fun passwordEncoder(): PasswordEncoder {
+        return BCryptPasswordEncoder()
+    }
 
     @Autowired
     fun configureAuth(authentication: AuthenticationManagerBuilder, adminUserDetailsService: AdminUserDetailsService) {
-        authentication
-                .userDetailsService(adminUserDetailsService)
-                // TODO: !!!
-                .passwordEncoder(NoOpPasswordEncoder.getInstance())
+        authentication.userDetailsService(adminUserDetailsService)
     }
 
     override fun configure(http: HttpSecurity) {
@@ -58,9 +58,10 @@ class WebSecurityConfigurer: WebSecurityConfigurerAdapter() {
 
     companion object {
         private val PUBLIC_URLS = arrayOf(
-            "/morale-boost/**",
-            "/v3/api-docs",
-            "/swagger-ui.html"
+            "/api/public/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
         )
     }
 

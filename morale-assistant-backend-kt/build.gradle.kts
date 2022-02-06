@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    val kotlinVersion = "1.4.21"
+    val kotlinVersion = "1.6.10"
     // Spring
-    id("org.springframework.boot") version "2.4.1"
+    id("org.springframework.boot") version "2.6.3"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
     // Docker
     id("com.palantir.docker") version "0.26.0"
@@ -41,8 +41,12 @@ release {
 }
 
 openApi {
+    forkProperties.set("-Dspring.profiles.active=open-api")
     outputDir.set(file("$projectDir/.."))
-    outputFileName.set("open-api.json")
+    groupedApiMappings.putAll(mapOf(
+        "http://localhost:8080/v3/api-docs/public" to "open-api.public.json",
+        "http://localhost:8080/v3/api-docs/admin" to "open-api.admin.json"
+    ))
 }
 
 springBoot {
@@ -55,10 +59,11 @@ val azureDevOpsPassword: String by extra
 
 repositories {
     mavenCentral()
+    // MaryTTS
     jcenter()
-    maven {
-        url = uri("https://repo.spring.io/milestone")
-    }
+//    maven {
+//        url = uri("https://repo.spring.io/milestone")
+//    }
     maven {
         name = "Azure DevOps Maven Artifactory"
         url = uri(azureDevOpsRepoUrl)
@@ -73,7 +78,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
 
-    implementation(springBootStarter("data-rest"))
+    implementation(springBootStarter("web"))
     implementation(springBootStarter("cache"))
     implementation(springBootStarter("data-jpa"))
     implementation(springBootStarter("validation"))
@@ -96,6 +101,9 @@ dependencies {
     val springdocVersion = "1.6.4"
     implementation("org.springdoc:springdoc-openapi-ui:$springdocVersion")
     implementation("org.springdoc:springdoc-openapi-data-rest:$springdocVersion")
+    implementation("org.springdoc:springdoc-openapi-security:$springdocVersion")
+    implementation("org.springdoc:springdoc-openapi-kotlin:$springdocVersion")
+
 
     kapt("org.hibernate:hibernate-jpamodelgen:5.4.27.Final")
 
@@ -112,6 +120,10 @@ tasks {
             freeCompilerArgs = listOf("-Xjsr305=strict")
             jvmTarget = "1.8"
         }
+    }
+
+    withType<org.springdoc.openapi.gradle.plugin.OpenApiGeneratorTask> {
+        inputs.files(*bootJar.get().outputs.files.toList().toTypedArray())
     }
 
     withType<Test> {
@@ -137,18 +149,15 @@ publishing {
         val bootJar by tasks.bootJar
 
         create<MavenPublication>("mavenJava") {
-            val openApiFile = "${openApi.outputDir.get()}/${openApi.outputFileName.get()}"
             val dockerComposeFile = "$projectDir/../docker-compose.yml"
+            artifactId = "morale-assistant-backend"
 
-            artifacts {
-                artifactId = "morale-assistant-backend"
-                artifact(bootJar)
-                artifact(openApiFile) {
-                    extension = "open-api.json"
-                }
-                artifact(dockerComposeFile) {
-                    extension = "docker-compose.yml"
-                }
+            artifact(bootJar)
+            artifact(dockerComposeFile) {
+                extension = "docker-compose.yml"
+            }
+            openApi.groupedApiMappings.get().forEach { (_, filename) ->
+                artifact("${openApi.outputDir.get()}/$filename")
             }
         }
     }

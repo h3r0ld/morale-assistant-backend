@@ -3,14 +3,17 @@ package hu.herolds.projects.morale.controller.admin
 import hu.herolds.projects.morale.controller.dto.JokeDto
 import hu.herolds.projects.morale.controller.dto.paging.JokeSearchRequest
 import hu.herolds.projects.morale.service.JokeService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
+import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
+@SecurityRequirement(name = "basicAuth")
 @RestController
-@RequestMapping("/admin/joke")
+@RequestMapping("/api/admin/joke", produces = [APPLICATION_JSON_VALUE])
 class JokeController(
     private val jokeService: JokeService
 ) {
@@ -28,21 +31,19 @@ class JokeController(
         return jokeService.getJoke(id)
     }
 
-    @GetMapping("/{id}/sound")
-    fun getJokeSound(@PathVariable("id") id: UUID): ByteArray? {
-        return jokeService.getJoke(id).soundFile
-    }
-
     @PutMapping("/{id}")
     fun updateJoke(@RequestBody @Validated jokeDto: JokeDto, @PathVariable("id") id: UUID) {
         log.info("Updating joke with id: [$id]")
         jokeService.updateJoke(id, jokeDto)
     }
 
-    @DeleteMapping("/{id}")
-    fun deleteJoke(@PathVariable("id") id: UUID) {
-        log.info("Deleting joke with id: [$id]")
-        jokeService.deleteJoke(id)
+    /**
+     * DeleteMapping is not supported by openapi-generator-cli (when generating typescript-angular for frontend)
+     */
+    @PostMapping("/delete")
+    fun deleteJoke(@RequestBody ids: Set<UUID>) {
+        log.info("Deleting jokes with ids: $ids")
+        ids.forEach { id ->  jokeService.deleteJoke(id) }
     }
 
     @PostMapping("/search")

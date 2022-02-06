@@ -1,6 +1,8 @@
 package hu.herolds.projects.morale.controller.dto
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY
 import hu.herolds.projects.morale.domain.Joke
 import hu.herolds.projects.morale.domain.enums.Language
 import java.time.LocalDateTime
@@ -14,13 +16,13 @@ data class JokeDto(
     val text: String,
     @get:NotNull
     val language: Language,
-    @get:Null
+    @get:JsonProperty(access = READ_ONLY)
     val id: UUID? = null,
-    @get:Null
+    @get:JsonProperty(access = READ_ONLY)
     val created: LocalDateTime? = null,
-    @get:Null
+    @get:JsonProperty(access = READ_ONLY)
     val lastModified: LocalDateTime? = null,
-    @get:Null
+    @get:JsonProperty(access = READ_ONLY)
     var soundFile: ByteArray? = null,
 ) {
     override fun equals(other: Any?): Boolean {

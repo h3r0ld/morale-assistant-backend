@@ -8,7 +8,5 @@ import java.util.UUID
 
 @Repository
 interface AdminUserRepository: JpaRepository<AdminUser, UUID> {
-    fun findByUsername(username: String?): Optional<AdminUser>
+    fun findByUsername(username: String?): AdminUser?
 }
-
-fun AdminUserRepository.findByUsernameOrNull(username: String?): AdminUser? = this.findByUsername(username).orElse(null)

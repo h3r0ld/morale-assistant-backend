@@ -4,12 +4,15 @@ import hu.herolds.projects.morale.controller.dto.JokeDto
 import hu.herolds.projects.morale.domain.enums.Language
 import hu.herolds.projects.morale.service.JokeService
 import org.slf4j.LoggerFactory
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-import java.util.UUID
+import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import java.util.*
 
 @RestController
-@RequestMapping("/morale-boost/")
+@RequestMapping("/api/public/morale-boost/", produces = [APPLICATION_JSON_VALUE])
 class MoraleAssistantController(
     private val jokeService: JokeService
 ) {

@@ -47,18 +47,4 @@ private val log = LoggerFactory.getLogger(javaClass)
 
         return TextToSpeechClient.create(textToSpeechSettings)
     }
-
-    @Bean
-    fun openApi2(buildProperties: BuildProperties): OpenAPI = OpenAPI()
-            .components(Components())
-            .info(Info()
-                    .title("Morale Assistant API")
-                    .description("A RESTful service for boosting your morale.")
-                    .version(buildProperties.version)
-                    .contact(Contact()
-                            .name("Kristof Herold")
-                            .url("https://github.com/h3r0ld")
-                            .email("kristof.herold@gmail.com")
-                    )
-            )
 }
