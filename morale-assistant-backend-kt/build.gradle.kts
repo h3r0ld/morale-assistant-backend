@@ -157,7 +157,9 @@ publishing {
                 extension = "docker-compose.yml"
             }
             openApi.groupedApiMappings.get().forEach { (_, filename) ->
-                artifact("${openApi.outputDir.get()}/$filename")
+                artifact("${openApi.outputDir.get()}/$filename") {
+                    classifier = filename.substringBeforeLast('.')
+                }
             }
         }
     }
