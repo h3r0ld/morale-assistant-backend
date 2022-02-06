@@ -23,6 +23,8 @@ class GoogleCloudSynthesizer(
     private val textToSpeechClient: TextToSpeechClient,
     private val applicationParameters: ApplicationParameters
 ): Synthesizer {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     override val supportedLanguages: Set<Language> = setOf(HU)
 
     override fun synthesize(text: String): Path {
@@ -61,9 +63,5 @@ class GoogleCloudSynthesizer(
             log.error("Could not synthesize and save audio file.", ex)
             throw SynthesizeException(cause = ex)
         }
-    }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(GoogleCloudSynthesizer::class.java)
     }
 }

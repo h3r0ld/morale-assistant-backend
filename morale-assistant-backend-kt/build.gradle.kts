@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    val kotlinVersion = "1.4.21"
+    val kotlinVersion = "1.6.10"
     // Spring
-    id("org.springframework.boot") version "2.4.1"
+    id("org.springframework.boot") version "2.6.3"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
     // Docker
     id("com.palantir.docker") version "0.26.0"
@@ -16,6 +16,9 @@ plugins {
     id("maven-publish")
     // Release
     id("net.researchgate.release") version "2.8.1"
+
+    id("com.github.johnrengelman.processes") version "0.5.0"
+    id("org.springdoc.openapi-gradle-plugin") version "1.3.3"
 }
 
 java {
@@ -37,16 +40,30 @@ release {
     preCommitText = "[skip ci]"
 }
 
+openApi {
+    forkProperties.set("-Dspring.profiles.active=open-api")
+    outputDir.set(file("$projectDir/.."))
+    groupedApiMappings.putAll(mapOf(
+        "http://localhost:8080/v3/api-docs/public" to "open-api.public.json",
+        "http://localhost:8080/v3/api-docs/admin" to "open-api.admin.json"
+    ))
+}
+
+springBoot {
+    buildInfo()
+}
+
 val azureDevOpsRepoUrl: String by extra
 val azureDevOpsUsername: String by extra
 val azureDevOpsPassword: String by extra
 
 repositories {
     mavenCentral()
+    // MaryTTS
     jcenter()
-    maven {
-        url = uri("https://repo.spring.io/milestone")
-    }
+//    maven {
+//        url = uri("https://repo.spring.io/milestone")
+//    }
     maven {
         name = "Azure DevOps Maven Artifactory"
         url = uri(azureDevOpsRepoUrl)
@@ -61,7 +78,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
 
-    implementation(springBootStarter("data-rest"))
+    implementation(springBootStarter("web"))
     implementation(springBootStarter("cache"))
     implementation(springBootStarter("data-jpa"))
     implementation(springBootStarter("validation"))
@@ -81,12 +98,18 @@ dependencies {
     val maryTTSVersion = "5.2"
     implementation("de.dfki.mary:voice-cmu-slt-hsmm:$maryTTSVersion")
 
+    val springdocVersion = "1.6.4"
+    implementation("org.springdoc:springdoc-openapi-ui:$springdocVersion")
+    implementation("org.springdoc:springdoc-openapi-data-rest:$springdocVersion")
+    implementation("org.springdoc:springdoc-openapi-security:$springdocVersion")
+    implementation("org.springdoc:springdoc-openapi-kotlin:$springdocVersion")
+
+
     kapt("org.hibernate:hibernate-jpamodelgen:5.4.27.Final")
 
     testImplementation(springBootStarter("test"))
     testImplementation("com.h2database:h2")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
-
 
     runtimeOnly("org.postgresql:postgresql")
 }
@@ -97,6 +120,10 @@ tasks {
             freeCompilerArgs = listOf("-Xjsr305=strict")
             jvmTarget = "1.8"
         }
+    }
+
+    withType<org.springdoc.openapi.gradle.plugin.OpenApiGeneratorTask> {
+        inputs.files(*bootJar.get().outputs.files.toList().toTypedArray())
     }
 
     withType<Test> {
@@ -122,21 +149,17 @@ publishing {
         val bootJar by tasks.bootJar
 
         create<MavenPublication>("mavenJava") {
-            artifact(bootJar)
-        }
-
-        create<MavenPublication>("DockerFile") {
-            val dockerFile = "$projectDir/Dockerfile"
-            artifact(dockerFile) {
-                artifactId = "Dockerfile"
-            }
-        }
-
-        create<MavenPublication>("dockerCompose") {
             val dockerComposeFile = "$projectDir/../docker-compose.yml"
+            artifactId = "morale-assistant-backend"
+
+            artifact(bootJar)
             artifact(dockerComposeFile) {
-                artifactId = "docker-compose"
-                extension = "yml"
+                extension = "docker-compose.yml"
+            }
+            openApi.groupedApiMappings.get().forEach { (_, filename) ->
+                artifact("${openApi.outputDir.get()}/$filename") {
+                    classifier = filename.substringBeforeLast('.')
+                }
             }
         }
     }

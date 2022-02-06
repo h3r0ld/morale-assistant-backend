@@ -36,7 +36,7 @@ internal class TestInitializer: ApplicationContextInitializer<ConfigurableApplic
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(TestInitializer::class.java)
+private val log = LoggerFactory.getLogger(javaClass)
     }
 }
 

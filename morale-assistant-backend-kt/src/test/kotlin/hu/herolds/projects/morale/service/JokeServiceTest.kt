@@ -13,25 +13,21 @@ import hu.herolds.projects.morale.domain.enums.Language
 import hu.herolds.projects.morale.domain.enums.Language.EN
 import hu.herolds.projects.morale.exception.ResourceNotFoundException
 import hu.herolds.projects.morale.repository.JokeRepository
-import hu.herolds.projects.morale.testutil.assertEquals
 import hu.herolds.projects.morale.testutil.isVeryClose
 import hu.herolds.projects.morale.util.isBetween
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.ResponseEntity
-import org.springframework.test.context.ActiveProfiles
 import java.io.File
 import java.net.URI
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.LocalDateTime.now
-import java.util.UUID
+import java.util.*
 
 @IntegrationTest
 class JokeServiceIT(
@@ -201,7 +197,7 @@ class JokeServiceRetryableIT(
             assertNull(id)
             assertNull(created)
             assertNull(lastModified)
-            assertEquals(JokeService.GENERAL_JOKE_TEXT, text)
+            assertEquals(GENERAL_JOKE_TEXT, text)
             assertEquals(EN, language)
         }
 

@@ -9,6 +9,8 @@ import java.nio.file.Path
 
 @Service
 class SynthesizerService {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     private var synthesizerMap: MutableMap<Language, MutableSet<Synthesizer>> = mutableMapOf()
 
     fun initialize(synthesizers: List<Synthesizer>) {
@@ -28,8 +30,4 @@ class SynthesizerService {
 
     private fun getSynthesizerService(language: Language): Synthesizer = synthesizerMap[language]?.first()
             ?: throw SynthesizeException("Language is not supported: $language")
-
-    companion object {
-        private val log = LoggerFactory.getLogger(SynthesizerService::class.java)
-    }
 }
