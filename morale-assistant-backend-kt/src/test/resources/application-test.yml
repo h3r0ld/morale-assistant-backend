@@ -12,4 +12,11 @@ spring:
 randomJoke:
   maxAttempts: 2
 
-google-credentials-file: classpath:dummy_google_credentials.json
+synthesizer:
+  google:
+    enabled: false
+    credentials-file: classpath:dummy_google_credentials.json
+
+aws:
+  paramstore:
+    enabled: false

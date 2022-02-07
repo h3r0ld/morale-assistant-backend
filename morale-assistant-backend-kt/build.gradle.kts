@@ -61,9 +61,6 @@ repositories {
     mavenCentral()
     // MaryTTS
     jcenter()
-//    maven {
-//        url = uri("https://repo.spring.io/milestone")
-//    }
     maven {
         name = "Azure DevOps Maven Artifactory"
         url = uri(azureDevOpsRepoUrl)
@@ -73,12 +70,6 @@ repositories {
         }
     }
 }
-
-//dependencyManagement {
-//    imports {
-//        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.3")
-//    }
-//}
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
