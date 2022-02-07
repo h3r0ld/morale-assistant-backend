@@ -10,7 +10,7 @@ spring:
     show-sql: false
 
 randomJoke:
-  max-attempts: 5
+  maxAttempts: 5
 
 sounds:
   base-path: file:/tmp/morale-assistant/
