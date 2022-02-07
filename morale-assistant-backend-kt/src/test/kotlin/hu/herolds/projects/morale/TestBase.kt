@@ -1,9 +1,12 @@
 package hu.herolds.projects.morale
 
 import com.google.cloud.texttospeech.v1.TextToSpeechClient
+import io.awspring.cloud.autoconfigure.context.ContextCredentialsAutoConfiguration
+import io.awspring.cloud.autoconfigure.context.ContextRegionProviderAutoConfiguration
 import org.junit.jupiter.api.TestInstance
 import org.mockito.Mockito.mock
 import org.slf4j.LoggerFactory
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.util.TestPropertyValues
@@ -25,6 +28,8 @@ import kotlin.annotation.AnnotationTarget.CLASS
 annotation class IntegrationTest
 
 internal class TestInitializer: ApplicationContextInitializer<ConfigurableApplicationContext> {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     override fun initialize(applicationContext: ConfigurableApplicationContext) {
         val tempDir = Files.createTempDirectory("test").toUri()
 
@@ -34,13 +39,10 @@ internal class TestInitializer: ApplicationContextInitializer<ConfigurableApplic
             log.info("Using sounds.base-path=${tempDir}")
         }
     }
-
-    companion object {
-private val log = LoggerFactory.getLogger(javaClass)
-    }
 }
 
 @TestConfiguration
+@EnableAutoConfiguration(exclude = [ContextCredentialsAutoConfiguration::class, ContextRegionProviderAutoConfiguration::class])
 internal class TestConfig {
     @Bean
     fun textToSpeechClient(): TextToSpeechClient = mock(TextToSpeechClient::class.java)

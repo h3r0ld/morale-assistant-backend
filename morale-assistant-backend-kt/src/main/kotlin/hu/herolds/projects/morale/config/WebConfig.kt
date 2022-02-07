@@ -68,7 +68,7 @@ class WebSecurityConfigurer: WebSecurityConfigurerAdapter() {
 }
 
 class UnauthorizedEntryPoint : AuthenticationEntryPoint {
-private val log = LoggerFactory.getLogger(javaClass)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun commence(
             request: HttpServletRequest,

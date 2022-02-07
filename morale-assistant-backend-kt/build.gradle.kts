@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     val kotlinVersion = "1.6.10"
     // Spring
-    id("org.springframework.boot") version "2.6.3"
-    id("io.spring.dependency-management") version "1.0.10.RELEASE"
+    id("org.springframework.boot") version "2.5.4"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
     // Docker
     id("com.palantir.docker") version "0.26.0"
     // Kotlin
@@ -61,9 +61,6 @@ repositories {
     mavenCentral()
     // MaryTTS
     jcenter()
-//    maven {
-//        url = uri("https://repo.spring.io/milestone")
-//    }
     maven {
         name = "Azure DevOps Maven Artifactory"
         url = uri(azureDevOpsRepoUrl)
@@ -87,6 +84,11 @@ dependencies {
     implementation(springBootModule("configuration-processor"))
 
     runtimeOnly(springBootStarter("aop"))
+
+
+    implementation("io.awspring.cloud:spring-cloud-starter-aws:2.3.3")
+//    implementation("io.awspring.cloud:spring-cloud-starter-aws-messaging:2.3.3")
+    implementation("io.awspring.cloud:spring-cloud-starter-aws-parameter-store-config:2.3.3")
 
     implementation("org.springframework.retry:spring-retry:1.3.0")
 
