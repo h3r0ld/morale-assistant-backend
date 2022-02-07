@@ -16,4 +16,4 @@ ARG JAR_FILE=*.jar
 
 COPY ${JAR_FILE} morale-assistant.jar
 
-CMD [ "java", "-jar", "-Dspring.profiles.active=deploy", "morale-assistant.jar" ]
+CMD [ "java", "-jar", "-Dspring.profiles.active=aws-prod", "morale-assistant.jar" ]
