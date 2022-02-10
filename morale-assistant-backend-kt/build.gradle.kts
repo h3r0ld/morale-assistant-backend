@@ -12,8 +12,6 @@ plugins {
     kotlin("kapt") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion
-    // Maven publish
-    id("maven-publish")
     // Release
     id("net.researchgate.release") version "2.8.1"
 
@@ -61,14 +59,6 @@ repositories {
     mavenCentral()
     // MaryTTS
     jcenter()
-    maven {
-        name = "Azure DevOps Maven Artifactory"
-        url = uri(azureDevOpsRepoUrl)
-        credentials {
-            username = azureDevOpsUsername
-            password = azureDevOpsPassword
-        }
-    }
 }
 
 dependencies {
@@ -85,9 +75,7 @@ dependencies {
 
     runtimeOnly(springBootStarter("aop"))
 
-
     implementation("io.awspring.cloud:spring-cloud-starter-aws:2.3.3")
-//    implementation("io.awspring.cloud:spring-cloud-starter-aws-messaging:2.3.3")
     implementation("io.awspring.cloud:spring-cloud-starter-aws-parameter-store-config:2.3.3")
 
     implementation("org.springframework.retry:spring-retry:1.3.0")
@@ -105,7 +93,6 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-data-rest:$springdocVersion")
     implementation("org.springdoc:springdoc-openapi-security:$springdocVersion")
     implementation("org.springdoc:springdoc-openapi-kotlin:$springdocVersion")
-
 
     kapt("org.hibernate:hibernate-jpamodelgen:5.4.27.Final")
 
@@ -141,41 +128,6 @@ tasks {
     val afterReleaseBuild by getting {
         val dockerTagsPush by getting
         dependsOn(dockerTagsPush)
-        // Disable publish for now, because I exceeded the Azure Artifacts free tier
-        // val publish by getting
-        // dependsOn(publish)
-    }
-}
-
-publishing {
-    publications {
-        val bootJar by tasks.bootJar
-
-        create<MavenPublication>("mavenJava") {
-            val dockerComposeFile = "$projectDir/../docker-compose.yml"
-            artifactId = "morale-assistant-backend"
-
-            artifact(bootJar)
-            artifact(dockerComposeFile) {
-                extension = "docker-compose.yml"
-            }
-            openApi.groupedApiMappings.get().forEach { (_, filename) ->
-                artifact("${openApi.outputDir.get()}/$filename") {
-                    classifier = filename.substringBeforeLast('.')
-                }
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            name = "azure-devops"
-            url = uri(azureDevOpsRepoUrl)
-            credentials {
-                username = azureDevOpsUsername
-                password = azureDevOpsPassword
-            }
-        }
     }
 }
 
