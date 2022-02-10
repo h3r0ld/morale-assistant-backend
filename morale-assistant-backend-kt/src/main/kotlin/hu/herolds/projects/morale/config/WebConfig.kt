@@ -58,6 +58,7 @@ class WebSecurityConfigurer: WebSecurityConfigurerAdapter() {
 
     companion object {
         private val PUBLIC_URLS = arrayOf(
+            "/favicon.ico",
             "/api/public/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
@@ -75,7 +76,7 @@ class UnauthorizedEntryPoint : AuthenticationEntryPoint {
             response: HttpServletResponse,
             authException: AuthenticationException?
     ) {
-        log.error("Unauthorized access.", authException)
+        log.error("Unauthorized access - Path: [${request.requestURI}], Params: [${request.queryString}],Message: [${authException?.localizedMessage}]", )
         response.sendError(HttpStatus.UNAUTHORIZED.value())
     }
 }

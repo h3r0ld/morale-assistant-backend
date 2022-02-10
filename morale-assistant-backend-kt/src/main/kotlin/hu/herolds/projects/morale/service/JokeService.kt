@@ -49,11 +49,16 @@ class JokeService(
         }, request.toPageRequest()).map(Joke::mapToJokeDto)
     }
 
-    fun saveJoke(jokeDto: JokeDto): UUID {
-        val joke = updateJoke(Joke(language = jokeDto.language, text = jokeDto.text), jokeDto)
-        log.info("Saved new joke: [${joke.id}]")
-        return joke.id!!
-    }
+    @Transactional
+    fun saveJoke(jokeDto: JokeDto): UUID = jokeRepository.save(
+        Joke(
+            language = jokeDto.language,
+            text = jokeDto.text,
+            soundFilePath = synthesizerService.synthesize(jokeDto.language, jokeDto.text).toUri()
+        )
+    ).also {
+        log.info("Saved new joke: [${it.id}]")
+    }.id!!
 
     fun updateJoke(id: UUID, jokeDto: JokeDto) {
         updateJoke(getJokeById(id), jokeDto)
@@ -106,18 +111,22 @@ class JokeService(
             log.info("Found a random joke(id: [${joke.id}])")
             return joke.mapToJokeDto(withSoundFile = true)
         } else {
-            log.error("Could not get a random joke with page index: [$jokeIndex]")
+            log.warn("Could not get a random joke with page index: [$jokeIndex]")
             throw GetRandomJokeException("Could not find the next joke!")
         }
     }
 
     @Recover
-    fun getGeneralJoke(exception: GetRandomJokeException, language: Language): JokeDto = JokeDto(
+    fun getGeneralJoke(exception: GetRandomJokeException, language: Language): JokeDto {
+        log.error("Could not get [$language] random joke! Returning general joke.")
+
+        return JokeDto(
             language = Language.EN,
             text = GENERAL_JOKE_TEXT,
         ).apply {
             soundFile = synthesizerService.synthesize(this.language, this.text).toUri().toByteArray()
         }
+    }
 
     @Recover
     fun handleSoundFileNotFound(exception: SoundFileNotFoundException): JokeDto = exception.joke.let {
