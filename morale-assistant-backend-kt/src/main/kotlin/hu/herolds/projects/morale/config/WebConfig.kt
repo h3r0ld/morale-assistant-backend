@@ -22,10 +22,25 @@ import javax.servlet.http.HttpServletResponse
 
 
 @Configuration
-class WebConfig: WebMvcConfigurer {
+class WebConfig(
+    private val corsParameters: CorsParameters
+): WebMvcConfigurer {
+
     override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**")
-            .allowedMethods(*HttpMethod.values().map { it.name }.toTypedArray())
+        val mapping = registry.addMapping("/**")
+
+        corsParameters.allowCredentials?.also {
+            mapping.allowCredentials(it)
+        }
+        corsParameters.allowedHeaders.takeIf { it.isNotEmpty() }?.also {
+            mapping.allowedHeaders(*corsParameters.allowedHeadersParams)
+        }
+        corsParameters.allowedOrigins.takeIf { it.isNotEmpty() }?.also {
+            mapping.allowedOrigins(*corsParameters.allowedOriginsParams)
+        }
+        corsParameters.allowedMethods.takeIf { it.isNotEmpty() }?.also {
+            mapping.allowedMethods(*corsParameters.allowedMethodsParams)
+        }
     }
 }
 
