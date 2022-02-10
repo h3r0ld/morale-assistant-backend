@@ -61,7 +61,6 @@ fun Joke.mapToJokeDto(withSoundFile: Boolean = false): JokeDto = JokeDto(
     text = this.text,
     created = this.created,
     lastModified = this.lastModified
-
 ).also { dto ->
     if (withSoundFile) {
         dto.soundFile = this.getSoundFile()
