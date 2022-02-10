@@ -49,3 +49,5 @@ build/
 google_credentials.json
 
 *.log
+
+application-*-local.yml
