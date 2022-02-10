@@ -139,11 +139,11 @@ tasks {
     }
 
     val afterReleaseBuild by getting {
-        val publish by getting
         val dockerTagsPush by getting
-
-        dependsOn(publish)
         dependsOn(dockerTagsPush)
+        // Disable publish for now, because I exceeded the Azure Artifacts free tier
+        // val publish by getting
+        // dependsOn(publish)
     }
 }
 
