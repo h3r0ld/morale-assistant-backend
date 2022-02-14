@@ -138,7 +138,7 @@ class JokeServiceIT(
     private fun setupNextSynthesize(): Path {
         File("temp/2.wav").writeText("content")
         val expectedPath = Paths.get("temp/2.wav")
-        `when`(synthesizer.synthesize(any(), any())).thenReturn(expectedPath)
+        `when`(synthesizer.synthesize(any(), any())).thenReturn(ByteArray(10))
         return expectedPath
     }
 }
@@ -207,7 +207,7 @@ class JokeServiceRetryableIT(
     private fun setupNextSynthesize(): Path {
         File("temp/2.wav").writeText("content")
         val expectedPath = Paths.get("temp/2.wav")
-        `when`(synthesizer.synthesize(any(), any())).thenReturn(expectedPath)
+        `when`(synthesizer.synthesize(any(), any())).thenReturn(ByteArray(10))
         return expectedPath
     }
 }
