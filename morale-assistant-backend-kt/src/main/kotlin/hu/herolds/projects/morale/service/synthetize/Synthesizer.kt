@@ -6,5 +6,5 @@ import java.nio.file.Path
 interface Synthesizer {
     val supportedLanguages: Set<Language>
 
-    fun synthesize(text: String): Path
+    fun synthesize(text: String): ByteArray
 }

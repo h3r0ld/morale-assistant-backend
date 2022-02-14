@@ -21,13 +21,12 @@ import java.nio.file.Path
 @ConditionalOnBean(TextToSpeechClient::class)
 class GoogleCloudSynthesizer(
     private val textToSpeechClient: TextToSpeechClient,
-    private val applicationParameters: ApplicationParameters
 ): Synthesizer {
     private val log = LoggerFactory.getLogger(javaClass)
 
     override val supportedLanguages: Set<Language> = setOf(HU)
 
-    override fun synthesize(text: String): Path {
+    override fun synthesize(text: String): ByteArray {
         try {
             log.info("Synthesizing text: [$text]")
 
@@ -52,13 +51,7 @@ class GoogleCloudSynthesizer(
             // audio file type
             val response = textToSpeechClient.synthesizeSpeech(input, voice, audioConfig)
 
-            val audioFilePath = applicationParameters.getNextFilePath()
-            FileOutputStream(audioFilePath.toFile()).use { out ->
-                // Get the audio contents from the response
-                out.write(response.audioContent.toByteArray())
-                log.info("Audio content written to file: [$audioFilePath]")
-                return audioFilePath
-            }
+            return response.audioContent.toByteArray()
         } catch (ex: Exception) {
             log.error("Could not synthesize and save audio file.", ex)
             throw SynthesizeException(cause = ex)

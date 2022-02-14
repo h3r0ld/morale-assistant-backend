@@ -10,9 +10,9 @@ import hu.herolds.projects.morale.exception.GetRandomJokeException
 import hu.herolds.projects.morale.exception.ResourceNotFoundException
 import hu.herolds.projects.morale.exception.SoundFileNotFoundException
 import hu.herolds.projects.morale.repository.JokeRepository
+import hu.herolds.projects.morale.service.sounds.SoundStorage
 import hu.herolds.projects.morale.util.and
 import hu.herolds.projects.morale.util.likeIgnoreCase
-import hu.herolds.projects.morale.util.toByteArray
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -32,6 +32,7 @@ const val GENERAL_JOKE_TEXT = "You know what's a complete joke? This site, and w
 class JokeService(
     private val jokeRepository: JokeRepository,
     private val synthesizerService: SynthesizerService,
+    private val soundStorage: SoundStorage,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -54,22 +55,29 @@ class JokeService(
         Joke(
             language = jokeDto.language,
             text = jokeDto.text,
-            soundFilePath = synthesizerService.synthesize(jokeDto.language, jokeDto.text).toUri()
+            soundFilePath = synthesizerService.synthesize(jokeDto.language, jokeDto.text).let {
+                soundStorage.save(it)
+            }
         )
     ).also {
-        log.info("Saved new joke: [${it.id}]")
+        log.info("Saved new joke: [${it.id}], sound: [${it.soundFilePath}]")
     }.id!!
 
     fun updateJoke(id: UUID, jokeDto: JokeDto) {
-        updateJoke(getJokeById(id), jokeDto)
-        log.info("Updated joke (id: [$id])")
+        val updatedJoke = updateJoke(getJokeById(id), jokeDto)
+        log.info("Updated joke - id: [$id], sound: [${updatedJoke.soundFilePath}]")
     }
 
     @Retryable(
             include = [SoundFileNotFoundException::class], maxAttempts = 1,
             exclude = [ResourceNotFoundException::class])
     fun getJoke(id: UUID): JokeDto {
-        return getJokeById(id).mapToJokeDto(withSoundFile = true)
+        val joke = getJokeById(id)
+        return joke.mapToJokeDto().apply {
+            soundFile = joke.soundFilePath?.let {
+                soundStorage.load(joke)
+            }
+        }
     }
 
     fun deleteJoke(id: UUID) {
@@ -109,7 +117,11 @@ class JokeService(
         if (singleJokePage.hasContent()) {
             val joke = singleJokePage.content[0]
             log.info("Found a random joke(id: [${joke.id}])")
-            return joke.mapToJokeDto(withSoundFile = true)
+            return joke.mapToJokeDto().apply {
+                soundFile = joke.soundFilePath?.let {
+                    soundStorage.load(joke)
+                }
+            }
         } else {
             log.warn("Could not get a random joke with page index: [$jokeIndex]")
             throw GetRandomJokeException("Could not find the next joke!")
@@ -124,13 +136,20 @@ class JokeService(
             language = Language.EN,
             text = GENERAL_JOKE_TEXT,
         ).apply {
-            soundFile = synthesizerService.synthesize(this.language, this.text).toUri().toByteArray()
+            soundFile = synthesizerService.synthesize(this.language, this.text)
         }
     }
 
     @Recover
-    fun handleSoundFileNotFound(exception: SoundFileNotFoundException): JokeDto = exception.joke.let {
-        updateJoke(it, JokeDto(text = it.text, language = it.language)).mapToJokeDto(withSoundFile = true)
+    fun handleSoundFileNotFound(exception: SoundFileNotFoundException): JokeDto = exception.joke.let { joke ->
+        log.info("Could not find sound file for joke [${joke.id}], re-synthesizing...")
+        val updatedJoke = updateJoke(joke, JokeDto(text = joke.text, language = joke.language))
+
+        updatedJoke.mapToJokeDto().apply {
+            soundFile = updatedJoke.soundFilePath?.let {
+                soundStorage.load(updatedJoke)
+            }
+        }
     }
 
     @Recover
@@ -145,7 +164,9 @@ class JokeService(
         joke.apply {
                 language = jokeDto.language
                 text = jokeDto.text
-                soundFilePath = synthesizerService.synthesize(jokeDto.language, jokeDto.text).toUri()
+                soundFilePath = synthesizerService.synthesize(jokeDto.language, jokeDto.text).let {
+                    soundStorage.save(it)
+                }
         }.let {
             jokeRepository.save(it)
         }

@@ -22,26 +22,11 @@ class ApplicationInitializer(
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
-        try {
-            initSoundFilesBaseFolder()
-        } catch (e: IOException) {
-            throw RuntimeException(e)
-        }
         val synthesizers = event.applicationContext.getBeansOfType(Synthesizer::class.java).values.toList()
         synthesizerService.initialize(synthesizers)
 
         if (adminUserRepository.findByUsername("admin") == null) {
             adminUserRepository.save(AdminUser(username = "admin", password = BCryptPasswordEncoder().encode("admin")))
-        }
-    }
-
-    private fun initSoundFilesBaseFolder() {
-        val filePath: Path = applicationParameters.baseDirectory
-        if (!Files.exists(filePath)) {
-            log.info("Created directory for sound files: {}", filePath)
-            Files.createDirectory(filePath)
-        } else {
-            log.info("Using existing directory for sound files: {}", filePath)
         }
     }
 }

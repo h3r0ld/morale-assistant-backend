@@ -58,8 +58,12 @@ class WebSecurityConfigurer: WebSecurityConfigurerAdapter() {
 
     companion object {
         private val PUBLIC_URLS = arrayOf(
+            "/actuator/health",
+
             "/favicon.ico",
+
             "/api/public/**",
+
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
