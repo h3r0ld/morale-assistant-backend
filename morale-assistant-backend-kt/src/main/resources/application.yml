@@ -11,3 +11,9 @@ synthesizer:
   google:
     enabled: true
     credentials-file: classpath:google_credentials.json
+
+client:
+  api:
+    CHUCK_NORRIS_API:
+      base-url: https://api.chucknorris.io/
+      language: EN

@@ -61,6 +61,13 @@ repositories {
     jcenter()
 }
 
+dependencyManagement {
+    val springCloudVersion = "2020.0.5"
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}")
+    }
+}
+
 dependencies {
     implementation(kotlin("stdlib-jdk7"))
     implementation(kotlin("stdlib-jdk8"))
@@ -72,6 +79,9 @@ dependencies {
     implementation(springBootStarter("validation"))
     implementation(springBootStarter("security"))
     implementation(springBootStarter("actuator"))
+
+
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
     implementation(springBootModule("configuration-processor"))
 

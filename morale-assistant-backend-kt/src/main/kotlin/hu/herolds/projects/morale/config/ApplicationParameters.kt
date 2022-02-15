@@ -1,10 +1,14 @@
 package hu.herolds.projects.morale.config
 
 import com.google.api.client.util.Base64
+import hu.herolds.projects.morale.controller.dto.AvailableJokeSource
+import hu.herolds.projects.morale.controller.dto.JokeSource
+import hu.herolds.projects.morale.domain.enums.Language
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.core.io.Resource
 import java.net.URI
+import java.net.URL
 import kotlin.io.path.createTempFile
 
 @ConstructorBinding
@@ -22,14 +26,27 @@ data class SoundsParams(
     val storageName: String
 )
 
+@ConstructorBinding
+@ConfigurationProperties(prefix = "client")
+data class JokeApiClientParameters(
+    val api: Map<AvailableJokeSource, JokeApiClientParams>
+) {
+    val apiParams = api.map { (source, params) -> JokeSource(name = source, url = params.baseUrl, language = params.language) }
+}
+
+data class JokeApiClientParams(
+    val baseUrl: URL,
+    val language: Language
+)
+
 data class RandomJokeParams(val maxAttempts: Int)
 
 data class SynthesizerParams(val google: GoogleSynthesizer)
 
 data class GoogleSynthesizer(
         val enabled: Boolean,
-        var credentialsFile: Resource?,
-        val credentialsBase64: String?
+        var credentialsFile: Resource? = null,
+        val credentialsBase64: String? = null
 ) {
 
     val credentialsInputStream = credentialsFile?.inputStream
