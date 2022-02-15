@@ -7,31 +7,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.net.URI
 import java.time.LocalDateTime
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.Path
 import javax.persistence.criteria.Predicate
 
 private val log = LoggerFactory.getLogger("Extensions")
-
-fun URI?.toByteArray(): ByteArray? = this?.let {
-    try {
-        val file = File(it.path)
-
-        if (!file.exists()) {
-            throw FileNotFoundException(it.path)
-        }
-
-        file.readBytes()
-    } catch (e: IOException) {
-        log.error("Could not load file from URI", e)
-        throw e
-    }
-}
 
 fun CriteriaBuilder.likeIgnoreCase(path: Path<String>, value: String): Predicate = like(lower(path), "%${value.lowercase()}%")
 

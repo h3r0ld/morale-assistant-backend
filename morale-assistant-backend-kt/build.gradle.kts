@@ -62,6 +62,7 @@ repositories {
 }
 
 dependencies {
+    implementation(kotlin("stdlib-jdk7"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
 
@@ -70,6 +71,7 @@ dependencies {
     implementation(springBootStarter("data-jpa"))
     implementation(springBootStarter("validation"))
     implementation(springBootStarter("security"))
+    implementation(springBootStarter("actuator"))
 
     implementation(springBootModule("configuration-processor"))
 

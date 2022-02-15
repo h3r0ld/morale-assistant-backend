@@ -3,9 +3,18 @@ spring:
     name: morale-assistant
   config:
     import: "aws-parameterstore:"
+
 cloud:
   aws:
     region:
       static: eu-central-1
     stack:
       auto: false
+
+aws:
+  paramstore:
+    region: eu-central-1
+
+sounds:
+  base-path: s3://morale-assistant
+  storage-name: AWS S3

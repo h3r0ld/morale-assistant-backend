@@ -7,9 +7,6 @@ spring:
 randomJoke:
   maxAttempts: 5
 
-sounds:
-  base-path: file:/tmp/morale-assistant/
-
 synthesizer:
   google:
     enabled: true

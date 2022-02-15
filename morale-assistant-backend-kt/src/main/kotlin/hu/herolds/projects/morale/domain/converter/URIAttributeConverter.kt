@@ -11,7 +11,7 @@ internal class URIAttributeConverter : AttributeConverter<URI?, String?> {
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun convertToDatabaseColumn(uri: URI?): String? {
-        return uri?.path
+        return uri?.toString()
     }
 
     override fun convertToEntityAttribute(str: String?): URI? {

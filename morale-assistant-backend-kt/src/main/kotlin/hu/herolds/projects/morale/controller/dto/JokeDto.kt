@@ -55,14 +55,10 @@ data class JokeDto(
     }
 }
 
-fun Joke.mapToJokeDto(withSoundFile: Boolean = false): JokeDto = JokeDto(
+fun Joke.mapToJokeDto() = JokeDto(
     id = this.id,
     language = this.language,
     text = this.text,
     created = this.created,
     lastModified = this.lastModified
-).also { dto ->
-    if (withSoundFile) {
-        dto.soundFile = this.getSoundFile()
-    }
-}
+)

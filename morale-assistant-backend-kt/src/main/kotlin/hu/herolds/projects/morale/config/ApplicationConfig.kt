@@ -33,12 +33,12 @@ private val log = LoggerFactory.getLogger(javaClass)
             havingValue = "true"
     )
     fun textToSpeechClient(applicationParameters: ApplicationParameters): TextToSpeechClient {
-        if (!applicationParameters.synthesizer.google.credentialsFile!!.exists()) {
-            log.error("Could not find Google credentials JSON file: ${applicationParameters.synthesizer.google.credentialsFile}")
-            throw IllegalArgumentException("Google credentials file does not exist!")
+        if (applicationParameters.synthesizer.google.credentialsInputStream == null) {
+            log.error("Could not find Google credentials JSON file: [${applicationParameters.synthesizer.google.credentialsFile}], credentials not given in base64 either.")
+            throw IllegalArgumentException("Google credentials not found!")
         }
 
-        val credentials = GoogleCredentials.fromStream(applicationParameters.synthesizer.google.credentialsFile.inputStream)
+        val credentials = GoogleCredentials.fromStream(applicationParameters.synthesizer.google.credentialsInputStream)
                 .createScoped("https://www.googleapis.com/auth/cloud-platform")
 
         val textToSpeechSettings = TextToSpeechSettings.newBuilder()

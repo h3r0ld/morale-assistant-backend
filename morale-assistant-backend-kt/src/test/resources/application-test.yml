@@ -20,3 +20,7 @@ synthesizer:
 aws:
   paramstore:
     enabled: false
+
+sounds:
+  base-path: file:tmp
+  storage-name: File System
