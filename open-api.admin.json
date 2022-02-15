@@ -8,7 +8,7 @@
       "url": "https://github.com/h3r0ld",
       "email": "kristof.herold@gmail.com"
     },
-    "version": "1.0.1-SNAPSHOT"
+    "version": "1.1.0-SNAPSHOT"
   },
   "servers": [
     {
@@ -197,8 +197,16 @@
               }
             }
           },
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -390,6 +398,125 @@
           }
         ]
       }
+    },
+    "/api/admin/import": {
+      "get": {
+        "tags": [
+          "joke-import-controller"
+        ],
+        "operationId": "importJokes",
+        "parameters": [
+          {
+            "name": "source",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CHUCK_NORRIS_API"
+              ]
+            }
+          },
+          {
+            "name": "count",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/api/admin/import/sources": {
+      "get": {
+        "tags": [
+          "joke-import-controller"
+        ],
+        "operationId": "getJokeSources",
+        "responses": {
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JokeSource"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -503,22 +630,6 @@
             "type": "integer",
             "format": "int64"
           },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "sort": {
-            "$ref": "#/components/schemas/Sort"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -533,6 +644,22 @@
             "type": "integer",
             "format": "int32"
           },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
           "empty": {
             "type": "boolean"
           }
@@ -541,18 +668,12 @@
       "PageableObject": {
         "type": "object",
         "properties": {
-          "sort": {
-            "$ref": "#/components/schemas/Sort"
-          },
           "offset": {
             "type": "integer",
             "format": "int64"
           },
-          "paged": {
-            "type": "boolean"
-          },
-          "unpaged": {
-            "type": "boolean"
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
           },
           "pageNumber": {
             "type": "integer",
@@ -561,6 +682,12 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
+          },
+          "paged": {
+            "type": "boolean"
           }
         }
       },
@@ -570,10 +697,10 @@
           "sorted": {
             "type": "boolean"
           },
-          "empty": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "empty": {
             "type": "boolean"
           }
         }
@@ -592,9 +719,6 @@
           "enabled": {
             "type": "boolean"
           },
-          "username": {
-            "type": "string"
-          },
           "password": {
             "type": "string"
           },
@@ -604,6 +728,9 @@
               "$ref": "#/components/schemas/GrantedAuthority"
             }
           },
+          "username": {
+            "type": "string"
+          },
           "accountNonExpired": {
             "type": "boolean"
           },
@@ -612,6 +739,33 @@
           },
           "credentialsNonExpired": {
             "type": "boolean"
+          }
+        }
+      },
+      "JokeSource": {
+        "required": [
+          "language",
+          "name",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "CHUCK_NORRIS_API"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "format": "url"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "HU",
+              "EN"
+            ]
           }
         }
       }
