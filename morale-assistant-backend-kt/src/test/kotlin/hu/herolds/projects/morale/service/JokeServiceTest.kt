@@ -167,8 +167,6 @@ class JokeServiceRetryableIT(
             cleanup()
             initialize()
 
-            val expectedPath = setupNextSynthesize()
-
             val joke = jokeRepository.save(Joke(
                 text = "Cica",
                 language = Language.HU,
@@ -180,7 +178,7 @@ class JokeServiceRetryableIT(
             verify(jokeService, times(1)).handleSoundFileNotFound(any())
 
             jokeRepository.findByIdOrNull(joke.id!!)!!.apply {
-                assertEquals(expectedPath.toUri().path, soundFilePath!!.path)
+                assertNotEquals(soundFilePath, joke.soundFilePath)
                 assertEquals(text, jokeDto.text)
                 assertEquals(language, jokeDto.language)
             }
@@ -189,10 +187,6 @@ class JokeServiceRetryableIT(
 
     @Test
     fun `getRandomJoke - retries`() {
-        // Given
-        setupNextSynthesize()
-
-        // When, Then
         moraleAssistantController.getRandomJoke(language = EN).apply {
             assertNull(id)
             assertNull(created)
@@ -202,12 +196,5 @@ class JokeServiceRetryableIT(
         }
 
         verify(jokeService, times(applicationParameters.randomJoke.maxAttempts)).getRandomJoke(any())
-    }
-
-    private fun setupNextSynthesize(): Path {
-        File("temp/2.wav").writeText("content")
-        val expectedPath = Paths.get("temp/2.wav")
-        `when`(synthesizer.synthesize(any(), any())).thenReturn(ByteArray(10))
-        return expectedPath
     }
 }
