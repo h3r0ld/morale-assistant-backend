@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springdoc.openapi.gradle.plugin.OpenApiGeneratorTask
 
 plugins {
     val kotlinVersion = "1.6.10"
@@ -30,7 +31,7 @@ docker {
     tag("latest", "$name:latest")
     tag(version.toString(), "$name:$version")
     files(
-            File("$buildDir/libs/${bootJar.archiveFileName.get()}")
+        File("$buildDir/libs/${bootJar.archiveFileName.get()}")
     )
 }
 
@@ -41,9 +42,10 @@ release {
 openApi {
     forkProperties.set("-Dspring.profiles.active=open-api")
     outputDir.set(file("$projectDir/.."))
+    waitTimeInSeconds.set(60)
     groupedApiMappings.putAll(mapOf(
-        "http://localhost:8080/v3/api-docs/public" to "open-api.public.json",
-        "http://localhost:8080/v3/api-docs/admin" to "open-api.admin.json"
+        "http://localhost:8089/v3/api-docs/public" to "open-api.public.json",
+        "http://localhost:8089/v3/api-docs/admin" to "open-api.admin.json"
     ))
 }
 
@@ -124,7 +126,7 @@ tasks {
         }
     }
 
-    withType<org.springdoc.openapi.gradle.plugin.OpenApiGeneratorTask> {
+    withType<OpenApiGeneratorTask> {
         inputs.files(*bootJar.get().outputs.files.toList().toTypedArray())
     }
 
@@ -140,6 +142,12 @@ tasks {
     val afterReleaseBuild by getting {
         val dockerTagsPush by getting
         dependsOn(dockerTagsPush)
+    }
+
+    withType<OpenApiGeneratorTask> {
+        val bootJar by getting
+        inputs.files(bootJar.outputs.files)
+        dependsOn(build)
     }
 }
 

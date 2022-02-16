@@ -12,7 +12,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080",
+      "url": "http://localhost:8089",
       "description": "Generated server url"
     }
   ],
@@ -413,7 +413,8 @@
             "schema": {
               "type": "string",
               "enum": [
-                "CHUCK_NORRIS_API"
+                "CHUCK_NORRIS_API",
+                "SV443_JOKE_API"
               ]
             }
           },
@@ -462,7 +463,12 @@
           "201": {
             "description": "Created"
           }
-        }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
       }
     },
     "/api/admin/import/sources": {
@@ -515,7 +521,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
       }
     }
   },
@@ -630,6 +641,19 @@
             "type": "integer",
             "format": "int64"
           },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -644,19 +668,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "sort": {
-            "$ref": "#/components/schemas/Sort"
-          },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
@@ -668,12 +679,18 @@
       "PageableObject": {
         "type": "object",
         "properties": {
-          "offset": {
-            "type": "integer",
-            "format": "int64"
+          "paged": {
+            "type": "boolean"
+          },
+          "unpaged": {
+            "type": "boolean"
           },
           "sort": {
             "$ref": "#/components/schemas/Sort"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int64"
           },
           "pageNumber": {
             "type": "integer",
@@ -682,22 +699,16 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "unpaged": {
-            "type": "boolean"
-          },
-          "paged": {
-            "type": "boolean"
           }
         }
       },
       "Sort": {
         "type": "object",
         "properties": {
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
           "empty": {
@@ -716,20 +727,11 @@
       "UserDetails": {
         "type": "object",
         "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
           "password": {
             "type": "string"
           },
-          "authorities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GrantedAuthority"
-            }
-          },
-          "username": {
-            "type": "string"
+          "enabled": {
+            "type": "boolean"
           },
           "accountNonExpired": {
             "type": "boolean"
@@ -739,6 +741,15 @@
           },
           "credentialsNonExpired": {
             "type": "boolean"
+          },
+          "username": {
+            "type": "string"
+          },
+          "authorities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GrantedAuthority"
+            }
           }
         }
       },
@@ -753,7 +764,8 @@
           "name": {
             "type": "string",
             "enum": [
-              "CHUCK_NORRIS_API"
+              "CHUCK_NORRIS_API",
+              "SV443_JOKE_API"
             ]
           },
           "url": {

@@ -17,3 +17,6 @@ client:
     CHUCK_NORRIS_API:
       base-url: https://api.chucknorris.io/
       language: EN
+    SV443_JOKE_API:
+      base-url: https://v2.jokeapi.dev/
+      language: EN

@@ -1,9 +1,10 @@
-package hu.herolds.projects.morale.service.imports.client
+package hu.herolds.projects.morale.service.imports
 
 import hu.herolds.projects.morale.controller.dto.AvailableJokeSource
 import hu.herolds.projects.morale.controller.dto.JokeDto
 import hu.herolds.projects.morale.domain.enums.Language
 import hu.herolds.projects.morale.service.JokeService
+import hu.herolds.projects.morale.service.imports.client.JokeApiService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.util.StopWatch
