@@ -35,8 +35,8 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "Validation error",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -55,8 +55,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "400": {
+            "description": "Validation error",
             "content": {
               "application/json": {
                 "schema": {
@@ -99,8 +99,8 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "Validation error",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -119,8 +119,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "400": {
+            "description": "Validation error",
             "content": {
               "application/json": {
                 "schema": {

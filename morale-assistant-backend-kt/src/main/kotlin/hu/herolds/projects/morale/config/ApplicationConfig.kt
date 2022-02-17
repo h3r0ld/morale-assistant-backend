@@ -15,6 +15,7 @@ import org.springframework.boot.info.BuildProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.retry.annotation.EnableRetry
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @Configuration
 @EnableRetry
@@ -47,4 +48,7 @@ private val log = LoggerFactory.getLogger(javaClass)
 
         return TextToSpeechClient.create(textToSpeechSettings)
     }
+
+    @Bean
+    fun bCryptPasswordEncoder() = BCryptPasswordEncoder()
 }

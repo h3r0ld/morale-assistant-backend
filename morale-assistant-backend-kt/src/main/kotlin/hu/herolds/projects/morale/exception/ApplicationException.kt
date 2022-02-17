@@ -2,7 +2,7 @@ package hu.herolds.projects.morale.exception
 
 import hu.herolds.projects.morale.domain.Joke
 
-sealed class ApplicationException(
+open class ApplicationException(
     message: String? = null,
     cause: Throwable? = null
 ): RuntimeException(message, cause)

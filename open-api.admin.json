@@ -35,8 +35,8 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "Validation error",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -55,8 +55,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "400": {
+            "description": "Validation error",
             "content": {
               "application/json": {
                 "schema": {
@@ -109,8 +109,8 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "description": "Validation error",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -129,8 +129,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "400": {
+            "description": "Validation error",
             "content": {
               "application/json": {
                 "schema": {
@@ -167,8 +167,8 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "description": "Validation error",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -187,8 +187,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "400": {
+            "description": "Validation error",
             "content": {
               "application/json": {
                 "schema": {
@@ -233,8 +233,8 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "description": "Validation error",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -253,8 +253,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "400": {
+            "description": "Validation error",
             "content": {
               "application/json": {
                 "schema": {
@@ -303,8 +303,8 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "description": "Validation error",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -323,8 +323,66 @@
               }
             }
           },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/change-password": {
+      "post": {
+        "tags": [
+          "admin-user-controller"
+        ],
+        "operationId": "changePassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
           "500": {
             "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
             "content": {
               "application/json": {
                 "schema": {
@@ -347,12 +405,12 @@
     "/api/admin/login": {
       "get": {
         "tags": [
-          "admin-login-controller"
+          "admin-user-controller"
         ],
         "operationId": "login",
         "responses": {
-          "400": {
-            "description": "Validation error",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -371,8 +429,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "400": {
+            "description": "Validation error",
             "content": {
               "application/json": {
                 "schema": {
@@ -430,8 +488,8 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "Validation error",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -450,8 +508,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "400": {
+            "description": "Validation error",
             "content": {
               "application/json": {
                 "schema": {
@@ -478,8 +536,8 @@
         ],
         "operationId": "getJokeSources",
         "responses": {
-          "400": {
-            "description": "Validation error",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -498,8 +556,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "400": {
+            "description": "Validation error",
             "content": {
               "application/json": {
                 "schema": {
@@ -679,18 +737,18 @@
       "PageableObject": {
         "type": "object",
         "properties": {
-          "paged": {
-            "type": "boolean"
-          },
-          "unpaged": {
-            "type": "boolean"
-          },
           "sort": {
             "$ref": "#/components/schemas/Sort"
           },
           "offset": {
             "type": "integer",
             "format": "int64"
+          },
+          "unpaged": {
+            "type": "boolean"
+          },
+          "paged": {
+            "type": "boolean"
           },
           "pageNumber": {
             "type": "integer",
@@ -705,14 +763,33 @@
       "Sort": {
         "type": "object",
         "properties": {
-          "unsorted": {
+          "sorted": {
             "type": "boolean"
           },
-          "sorted": {
+          "unsorted": {
             "type": "boolean"
           },
           "empty": {
             "type": "boolean"
+          }
+        }
+      },
+      "ChangePasswordDto": {
+        "required": [
+          "newPassword",
+          "newPasswordConfirm",
+          "oldPassword"
+        ],
+        "type": "object",
+        "properties": {
+          "oldPassword": {
+            "type": "string"
+          },
+          "newPassword": {
+            "type": "string"
+          },
+          "newPasswordConfirm": {
+            "type": "string"
           }
         }
       },
@@ -727,11 +804,14 @@
       "UserDetails": {
         "type": "object",
         "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
           "password": {
             "type": "string"
           },
-          "enabled": {
-            "type": "boolean"
+          "username": {
+            "type": "string"
           },
           "accountNonExpired": {
             "type": "boolean"
@@ -741,9 +821,6 @@
           },
           "credentialsNonExpired": {
             "type": "boolean"
-          },
-          "username": {
-            "type": "string"
           },
           "authorities": {
             "type": "array",
