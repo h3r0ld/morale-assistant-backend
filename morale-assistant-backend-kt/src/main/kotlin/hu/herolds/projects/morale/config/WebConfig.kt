@@ -60,7 +60,7 @@ class WebSecurityConfigurer: WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                // Allow publicly accessable endpoint
+                // Allow publicly accessible endpoint
                 .antMatchers(*PUBLIC_URLS).permitAll()
                 // Any other endpoints are authenticated
                 .anyRequest().authenticated()

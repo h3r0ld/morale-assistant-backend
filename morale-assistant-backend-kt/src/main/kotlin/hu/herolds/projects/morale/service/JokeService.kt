@@ -16,6 +16,8 @@ import hu.herolds.projects.morale.util.likeIgnoreCase
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.retry.annotation.Recover
 import org.springframework.retry.annotation.Retryable
@@ -47,7 +49,7 @@ class JokeService(
             }
 
             cb.and(predicates)
-        }, request.toPageRequest()).map(Joke::mapToJokeDto)
+        }, request.toPageRequest(sort = Sort.by(DESC, Joke_.created.name))).map(Joke::mapToJokeDto)
     }
 
     @Transactional

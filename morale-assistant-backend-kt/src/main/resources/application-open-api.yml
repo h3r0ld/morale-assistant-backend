@@ -1,4 +1,8 @@
 server:
-  port: 8080
+  port: 8089
 springdoc:
   default-produces-media-type: application/json
+
+sounds:
+  base-path: file:/tmp
+  storage-name: File System
