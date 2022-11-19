@@ -37,7 +37,7 @@ class JokeCacheService(
         }
     }
 
-    @Cacheable
+    @Cacheable("generalJoke")
     fun getGeneralJoke(): JokeDto {
         log.info("Get general joke")
         return JokeDto(
