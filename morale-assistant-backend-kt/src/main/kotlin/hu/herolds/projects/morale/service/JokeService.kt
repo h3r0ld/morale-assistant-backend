@@ -14,6 +14,8 @@ import hu.herolds.projects.morale.service.sounds.SoundStorage
 import hu.herolds.projects.morale.util.and
 import hu.herolds.projects.morale.util.likeIgnoreCase
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.CachePut
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -27,14 +29,13 @@ import java.io.File
 import java.util.*
 import javax.persistence.criteria.Predicate
 
-const val GENERAL_JOKE_TEXT = "You know what's a complete joke? This site, and when it can't find the next joke for you! :("
-
 @Service
 @Transactional
 class JokeService(
     private val jokeRepository: JokeRepository,
     private val synthesizerService: SynthesizerService,
     private val soundStorage: SoundStorage,
+    private val jokeCacheService: JokeCacheService,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -65,6 +66,7 @@ class JokeService(
         log.info("Saved new joke: [${it.id}], sound: [${it.soundFilePath}]")
     }.id!!
 
+    @CacheEvict(value = ["jokes"], key = "#id")
     fun updateJoke(id: UUID, jokeDto: JokeDto) {
         val updatedJoke = updateJoke(getJokeById(id), jokeDto)
         log.info("Updated joke - id: [$id], sound: [${updatedJoke.soundFilePath}]")
@@ -74,14 +76,10 @@ class JokeService(
             include = [SoundFileNotFoundException::class], maxAttempts = 1,
             exclude = [ResourceNotFoundException::class])
     fun getJoke(id: UUID): JokeDto {
-        val joke = getJokeById(id)
-        return joke.mapToJokeDto().apply {
-            soundFile = joke.soundFilePath?.let {
-                soundStorage.load(joke)
-            }
-        }
+        return jokeCacheService.getJoke(id);
     }
 
+    @CacheEvict(value = ["jokes"], key = "#id")
     fun deleteJoke(id: UUID) {
         val joke = getJokeById(id)
 
@@ -119,11 +117,7 @@ class JokeService(
         if (singleJokePage.hasContent()) {
             val joke = singleJokePage.content[0]
             log.info("Found a random joke(id: [${joke.id}])")
-            return joke.mapToJokeDto().apply {
-                soundFile = joke.soundFilePath?.let {
-                    soundStorage.load(joke)
-                }
-            }
+            return jokeCacheService.getJoke(joke.id!!)
         } else {
             log.warn("Could not get a random joke with page index: [$jokeIndex]")
             throw GetRandomJokeException("Could not find the next joke!")
@@ -134,15 +128,11 @@ class JokeService(
     fun getGeneralJoke(exception: GetRandomJokeException, language: Language): JokeDto {
         log.error("Could not get [$language] random joke! Returning general joke.")
 
-        return JokeDto(
-            language = Language.EN,
-            text = GENERAL_JOKE_TEXT,
-        ).apply {
-            soundFile = synthesizerService.synthesize(this.language, this.text)
-        }
+        return jokeCacheService.getGeneralJoke()
     }
 
     @Recover
+    @CachePut(cacheNames = ["jokes"], key = "#exception.joke.id")
     fun handleSoundFileNotFound(exception: SoundFileNotFoundException): JokeDto = exception.joke.let { joke ->
         log.info("Could not find sound file for joke [${joke.id}], re-synthesizing...")
         val updatedJoke = updateJoke(joke, JokeDto(text = joke.text, language = joke.language))

@@ -20,3 +20,9 @@ client:
     SV443_JOKE_API:
       base-url: https://v2.jokeapi.dev/
       language: EN
+
+logging:
+  level:
+    org:
+      springframework:
+        cache: ERROR
