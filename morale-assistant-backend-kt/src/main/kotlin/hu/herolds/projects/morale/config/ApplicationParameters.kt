@@ -31,7 +31,9 @@ data class SoundsParams(
 data class JokeApiClientParameters(
     val api: Map<AvailableJokeSource, JokeApiClientParams>
 ) {
-    val apiParams = api.map { (source, params) -> JokeSource(name = source, url = params.baseUrl, language = params.language) }
+    val apiParams = api.map { (source, params) ->
+        JokeSource(name = source, url = params.baseUrl, language = params.language)
+    }
 }
 
 data class JokeApiClientParams(
@@ -44,11 +46,10 @@ data class RandomJokeParams(val maxAttempts: Int)
 data class SynthesizerParams(val google: GoogleSynthesizer)
 
 data class GoogleSynthesizer(
-        val enabled: Boolean,
-        var credentialsFile: Resource? = null,
-        val credentialsBase64: String? = null
+    val enabled: Boolean,
+    var credentialsFile: Resource? = null,
+    val credentialsBase64: String? = null
 ) {
-
     val credentialsInputStream = credentialsFile?.inputStream
         ?: credentialsBase64?.let {
             val decodedCredentials = Base64.decodeBase64(it)

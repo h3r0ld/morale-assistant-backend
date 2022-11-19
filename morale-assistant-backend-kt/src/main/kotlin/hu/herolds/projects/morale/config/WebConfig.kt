@@ -47,11 +47,6 @@ class WebConfig(
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfigurer: WebSecurityConfigurerAdapter() {
-//    @Bean
-//    fun passwordEncoder(): PasswordEncoder {
-//        return BCryptPasswordEncoder()
-//    }
-
     @Autowired
     fun configureAuth(authentication: AuthenticationManagerBuilder, adminUserDetailsService: AdminUserDetailsService) {
         authentication.userDetailsService(adminUserDetailsService)

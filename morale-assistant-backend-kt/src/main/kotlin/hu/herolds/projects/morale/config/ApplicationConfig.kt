@@ -18,9 +18,8 @@ import org.springframework.retry.annotation.EnableRetry
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @Configuration
-@EnableRetry
 class ApplicationConfig {
-private val log = LoggerFactory.getLogger(javaClass)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @Bean
     fun localMaryInterface(): LocalMaryInterface = LocalMaryInterface().apply {
